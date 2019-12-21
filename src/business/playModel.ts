@@ -22,9 +22,24 @@ export interface IPlayerUpdate extends IPlayer {
     id: string
 }
 
+export interface IMatches {
+    [key: string]: IMatch;
+}
+
 export interface IMatch {
-    player1: string;
-    player2: string;
+    player1Name: string;
+    player2Name: string;
     player1Wins: boolean;
     eloChange: number;
+    timestamp: Date;
+}
+
+export interface IMatchesFilter {
+    playerName: string;
+    opponentName: string;
+}
+
+export interface IDropdown {
+    text: string|number|object;
+    value: string|number|object;
 }

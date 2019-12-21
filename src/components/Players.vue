@@ -1,10 +1,11 @@
 <template>
     <v-row>
         <v-col 
-        cols="6"
-        v-for="(val, k) in $store.state.players"
-        :key="k">
-            <player :id="k" :name="val.player" :elo="val.elo" :playing="false"></player>
+        cols="12"
+        v-for="(val, i) in $store.getters.rankedPlayers"
+        :key="val"
+        style="padding: 2px 4px;">
+            <player :id="val" :name="$store.state.players[val].player" :elo="$store.state.players[val].elo" :rank="i+1" :playing="false"></player>
         </v-col>
     </v-row>
 </template>

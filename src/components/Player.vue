@@ -1,8 +1,13 @@
 <template>
     <v-card @click="selectPlayer" :color="color" max>
         <v-card-text>
-            <h3>{{name}}</h3>
-            <p class="font-weight-regular">{{elo}}</p>
+            <v-row class="mx-2">
+                <h2>{{rank}}</h2>
+                &nbsp;&nbsp;
+                <h2 class="font-weight-regular" style="padding-left: 10px;">{{name}}</h2>
+                <v-spacer></v-spacer>
+                <h3 class="font-weight-regular">{{elo}}</h3>
+            </v-row>
         </v-card-text>
     </v-card>
 </template>
@@ -16,6 +21,7 @@ import { IPlayer, unselectedColor, selectedColor, winnerColor } from '@/business
         id: String,
         name: String,
         elo: Number,
+        rank: Number,
         playing: Boolean
     }
 })

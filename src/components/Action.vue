@@ -16,7 +16,7 @@
     <v-fab-transition>
       <v-btn
         v-show="$store.getters.onePlayerSelected"
-        @click="$router.push('/MatchHistory')"
+        @click="goToMatchHistory()"
         class="lighten-1"
         fab
         bottom
@@ -45,7 +45,12 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 @Component({})
-export default class Action extends Vue {}
+export default class Action extends Vue {
+    goToMatchHistory() {
+      this.$store.dispatch('setMatchesFilter', { playerName: this.$store.state.players[this.$store.state.selectedPlayers[0]].player });
+      this.$router.push('/MatchHistory');
+  }
+}
 </script>
 <style scoped>
 button.v-btn--fab {
