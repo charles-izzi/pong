@@ -5,14 +5,17 @@ import MatchHistory from "../components/MatchHistory.vue";
 
 Vue.use(VueRouter);
 
+export const homeRoute = "/";
+export const matchHistoryRoute = "/MatchHistory";
+
 const routes = [
   {
-    path: "/",
+    path: homeRoute,
     name: "home",
     component: Home
   },
   {
-    path: "/MatchHistory",
+    path: matchHistoryRoute,
     name: "matchHistory",
     component: MatchHistory
   },

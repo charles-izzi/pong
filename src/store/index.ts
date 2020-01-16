@@ -19,6 +19,8 @@ export default new Vuex.Store({
         winner: "",
         showAddDialog: false,
         showPlayDialog: false,
+        showDeleteMatchDialog: false,
+        deleteMatchKey: ""
     },
     getters: {
         players: state => {
@@ -53,14 +55,17 @@ export default new Vuex.Store({
         playerByName: state => (name: string) => {
             return Object.keys(state.players || {}).find(x => state.players[x].player.toLowerCase() === name.toLowerCase());
         },
+        match: state => (id: string) => {
+            return state.matches[id];
+        },
         filteredMatches: state => {
             return Object.keys(state.matches).filter((x: string) => {
                 const match = state.matches[x];
                 return !state.matchesFilter.playerName ||
-                        ((state.matchesFilter.playerName === match.player1Name || 
-                            state.matchesFilter.playerName === match.player2Name) &&
-                        (!state.matchesFilter.opponentName || 
-                            state.matchesFilter.opponentName === match.player1Name || 
+                    ((state.matchesFilter.playerName === match.player1Name ||
+                        state.matchesFilter.playerName === match.player2Name) &&
+                        (!state.matchesFilter.opponentName ||
+                            state.matchesFilter.opponentName === match.player1Name ||
                             state.matchesFilter.opponentName === match.player2Name));
             }).sort((a: string, b: string) => {
                 return state.matches[a].timestamp < state.matches[b].timestamp ? 1 : -1;
@@ -72,8 +77,8 @@ export default new Vuex.Store({
     },
     mutations: {
         setPlayer: (state, player: IPlayerUpdate) => {
-            state.players[player.id] = { player: player.player, elo: player.elo, hidden: player.hidden } as IPlayer;            
-        },        
+            state.players[player.id] = { player: player.player, elo: player.elo, hidden: player.hidden } as IPlayer;
+        },
         setPlayers: (state, players: IPlayers) => {
             state.players = players;
         },
@@ -103,7 +108,13 @@ export default new Vuex.Store({
         },
         setMatchesFilter: (state, matchFilter: IMatchesFilter) => {
             state.matchesFilter = matchFilter;
-        }
+        },
+        setShowDeleteMatchDialog: (state, val: boolean) => {
+            state.showDeleteMatchDialog = val;
+        },
+        setDeleteMatchKey: (state, val: string) => {
+            state.deleteMatchKey = val;
+        },
     },
     actions: {
         fetchPlayers: async ({ commit }) => {
@@ -141,7 +152,7 @@ export default new Vuex.Store({
             return eloChange;
         },
         postMatch: async (context, payload: IMatch) => {
-            await $http.post("matchHistory.json", {...payload, timestamp: new Date()});
+            await $http.post("matchHistory.json", { ...payload, timestamp: new Date() });
         },
         postUser: async (context, payload: IPlayerUpdate) => {
             return await $http.post(`user.json`, {
@@ -172,7 +183,30 @@ export default new Vuex.Store({
         },
         setMatchesFilter: ({ commit }, matchFilter: IMatchesFilter) => {
             commit('setMatchesFilter', matchFilter);
-        }
+        },
+        setShowDeleteMatchDialog: ({ commit }, val: boolean) => {
+            commit('setShowDeleteMatchDialog', val);
+        },
+        deleteMatch: async (context, matchKey: string) => {
+            await $http.delete(`matchHistory/${matchKey}.json`);
+        },
+        removeMatch: ({ dispatch, state, commit, getters }, matchKey: string) => {
+            dispatch('deleteMatch', matchKey);
+            const match = getters.match(matchKey);
+            const player1Id = getters.playerByName(match.player1Name);
+            let player1 = getters.player(player1Id);
+            player1.elo += match.player1Wins ? match.eloChange * -1 : match.eloChange;
+            dispatch('putUser', { id: player1Id, ...player1 });
+            const player2Id = getters.playerByName(match.player2Name);
+            let player2 = getters.player(player2Id);
+            player2.elo += match.player1Wins ? match.eloChange : match.eloChange * -1;
+            dispatch('putUser', { id: player2Id, ...player2 });
+            delete state.matches[matchKey];
+            commit('setMatches', {...state.matches});
+        },
+        setDeleteMatchKey: ({commit}, id: string) => {
+            commit('setDeleteMatchKey', id);
+        },
     },
     modules: {}
 });
