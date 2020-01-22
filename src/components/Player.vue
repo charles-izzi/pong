@@ -1,8 +1,8 @@
 <template>
-    <v-card @click="selectPlayer" :color="color">
+    <v-card @click="select(id)" :color="color">
         <v-card-text>
-            <v-row class="mx-2">
-                <h2 :class="{'rank-col': !playing}">{{rank}}</h2>
+            <v-row class="mx-4">
+                <h2 :class="{'rank-col': !dense, 'rank-col-dense': dense}">{{rank}}</h2>
                 <h3 class="font-weight-regular" style="padding-left: 10px;">{{name}}</h3>
                 <v-spacer></v-spacer>
                 <h3 class="font-weight-regular">{{elo}}</h3>
@@ -13,7 +13,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { IPlayer, unselectedColor, selectedColor, winnerColor } from '@/business/playModel';
+import { IPlayer, unselectedColor } from '@/business/playModel';
     
 @Component<Player>({
     props: {
@@ -21,7 +21,10 @@ import { IPlayer, unselectedColor, selectedColor, winnerColor } from '@/business
         name: String,
         elo: Number,
         rank: Number,
-        playing: Boolean
+        dense: Boolean,
+        select: Function,
+        selectColor: String,        
+        selected: Function,
     }
 })
 export default class Player extends Vue {
@@ -29,16 +32,11 @@ export default class Player extends Vue {
     name!: string;
     elo!: number;
     playing!: boolean;
-    selectPlayer() {
-        if (this.playing) {
-            this.$store.dispatch('setWinner', this.id);
-            return;
-        }
-        this.$store.dispatch('selectPlayer', this.id);
-    }
+    selectColor!: string;
+    select!: (id: string) => void;
+    selected!: (id: string) => boolean;
     get color() {
-        if (!this.playing && this.$store.getters.isPlayerSelected(this.id)) return selectedColor;
-        if (this.playing && this.$store.getters.isPlayerWinner(this.id)) return winnerColor;
+        if (this.selected(this.id)) return this.selectColor;
         return unselectedColor;
     }
 }
@@ -46,6 +44,7 @@ export default class Player extends Vue {
 <style>
     .v-card {
         border-radius: 0 !important;
+        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.1), 0px 2px 2px 0px rgba(0, 0, 0, 0.07), 0px 1px 5px 0px rgba(0, 0, 0, 0.06);
     }
     .v-card__text {
         padding: 10px 16px;
@@ -55,5 +54,8 @@ export default class Player extends Vue {
     }
     .rank-col {
         width: 8%
+    }
+    .rank-col-dense {
+        width: 6%
     }
 </style>

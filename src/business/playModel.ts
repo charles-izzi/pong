@@ -5,6 +5,7 @@ export const unselectedColor = "white";
 export interface IPlayer {
     player: string;
     elo: number;
+    rank: number;
     hidden: boolean;
 }
 

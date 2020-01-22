@@ -15,6 +15,7 @@ export default new Vuex.Store({
         players: {} as IPlayers,
         matches: {} as IMatches,
         matchesFilter: {} as IMatchesFilter,
+        rankedPlayers: [] as string[],
         selectedPlayers: [] as string[],
         winner: "",
         showAddDialog: false,
@@ -26,10 +27,8 @@ export default new Vuex.Store({
         players: state => {
             return state.players;
         },
-        rankedPlayers: state => {
-            return Object.keys(state.players).sort((a: string, b: string) => {
-                return state.players[a].elo < state.players[b].elo ? 1 : -1;
-            });
+        unselectedRankedPlayers: state => {
+            return state.rankedPlayers.filter((x: string) => !state.selectedPlayers.includes(x));
         },
         noPlayersSelected: state => {
             return state.selectedPlayers.length === 0;
@@ -44,7 +43,7 @@ export default new Vuex.Store({
             return state.selectedPlayers.length > 2;
         },
         isPlayerSelected: state => (id: string) => {
-            return state.selectedPlayers.find(x => x === id) !== undefined;
+            return state.selectedPlayers.includes(id);
         },
         isPlayerWinner: state => (id: string) => {
             return state.winner === id;
@@ -82,6 +81,12 @@ export default new Vuex.Store({
         setPlayers: (state, players: IPlayers) => {
             state.players = players;
         },
+        rankPlayers: (state) => {
+            state.rankedPlayers = Object.keys(state.players).sort((a: string, b: string) => {
+                return state.players[a].elo < state.players[b].elo ? 1 : -1;
+            });
+            state.rankedPlayers.forEach((x: string, index: number) => state.players[x].rank = index + 1);
+        },
         setMatches: (state, matches: IMatches) => {
             state.matches = matches;
         },
@@ -117,8 +122,16 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        fetchPlayers: async ({ commit }) => {
-            commit('setPlayers', (await $http.get("/user.json")).data as IPlayers);
+        setPlayer: ({ commit }, player: IPlayerUpdate) => {
+            commit('setPlayer', player);
+            commit('rankPlayers');
+        },
+        setPlayers: ({ commit }, players: IPlayers) => {
+            commit('setPlayers', players);
+            commit('rankPlayers');
+        },
+        fetchPlayers: async ({ dispatch }) => {
+            dispatch('setPlayers', (await $http.get("/user.json")).data as IPlayers);
         },
         fetchMatches: async ({ commit }) => {
             commit('setMatches', (await $http.get("/matchHistory.json")).data as IMatches);
@@ -149,6 +162,7 @@ export default new Vuex.Store({
             dispatch('putUser', { id: state.selectedPlayers[1], ...player2 } as IPlayerUpdate);
             commit('setPlayer', { id: state.selectedPlayers[0], ...player1 } as IPlayerUpdate);
             commit('setPlayer', { id: state.selectedPlayers[1], ...player2 } as IPlayerUpdate);
+            commit('rankPlayers');
             return eloChange;
         },
         postMatch: async (context, payload: IMatch) => {

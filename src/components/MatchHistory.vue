@@ -3,6 +3,12 @@
         <v-row>
             <v-card-title>
                 <span class="headline">Match History</span>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{on}">
+                        <v-icon v-on="on" class="ml-2 mb-2">mdi-help-circle-outline</v-icon>
+                    </template>
+                    Long press a match to prompt deletion
+                </v-tooltip>
             </v-card-title>
             <v-row class="px-3">
                 <v-col class="py-0 px-3">

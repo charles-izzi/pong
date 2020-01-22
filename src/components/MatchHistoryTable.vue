@@ -12,7 +12,7 @@
                 <tr
                     v-for="k in matches"
                     :key="k"
-                    @contextmenu="showDeleteDialog(k)"
+                    @contextmenu.stop="showDeleteDialog(k)"
                 >
                     <td>{{getPlayer(k)}}</td>
                     <td>{{getOpponent(k)}}</td>
