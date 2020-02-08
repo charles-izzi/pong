@@ -1,6 +1,6 @@
 <template>
-    <v-container>
-        <v-row class="sticky">
+    <v-container ref="container">
+        <v-row class="sticky" :style="{width: stickyWidth + 'px'}">
             <v-col cols="12" style="padding:0; margin-top:-12px;">
                 <v-card>
                     <v-card-text>
@@ -29,22 +29,13 @@
                         </v-row>
                     </v-card-text>
                 </v-card>
-                <v-col cols="12" style="padding-top:0;">
-                    <players
-                        :players="$store.state.selectedPlayers"
-                        :select="selectPlayer"
-                        :selected="$store.getters.isPlayerSelected"
-                        :selectColor="selectedColor"
-                    ></players>
-                </v-col>
             </v-col>
         </v-row>
-        <v-row :style="{ marginTop: marginTop + 'px' }">
+        <v-row style="marginTop: 45px;">
             <v-col cols="12" style="padding-top:0;">
                 <add-player></add-player>
-                <play></play>
                 <players
-                    :players="$store.getters.unselectedRankedPlayers"
+                    :players="$store.getters.rankedPlayers"
                     :select="selectPlayer"
                     :selected="$store.getters.isPlayerSelected"
                     :selectColor="selectedColor"
@@ -59,7 +50,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import AddPlayer from "./AddPlayer.vue";
-import Play from "./Play.vue";
 import Players from "./Players.vue";
 import Action from "./Action.vue";
 import { selectedColor } from "@/business/playModel";
@@ -67,7 +57,6 @@ import { selectedColor } from "@/business/playModel";
 @Component({
     components: {
         "add-player": AddPlayer,
-        play: Play,
         players: Players,
         action: Action
     }
@@ -75,13 +64,12 @@ import { selectedColor } from "@/business/playModel";
 export default class Home extends Vue {
     selectedColor: string = selectedColor;
     scrollTop: number = 0;
+    stickyWidth: number = 0;
     selectPlayer(id: string) {
         this.$store.dispatch("selectPlayer", id);
     }
-    get marginTop() {
-        return this.$store.state.selectedPlayers.length * 42 + 45;
-    }
     async mounted() {
+        this.stickyWidth = (this.$refs.container as HTMLElement).clientWidth;        
         await this.$store.dispatch("fetchPlayers");
     }
 }

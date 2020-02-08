@@ -19,6 +19,13 @@ export interface IPlay {
     player1Wins: boolean;
 }
 
+export interface IPlayDialog {
+    player1: string;
+    player2: string;
+    winner: string;
+    showDialog: boolean;
+}
+
 export interface IPlayerUpdate extends IPlayer {
     id: string
 }
@@ -31,6 +38,8 @@ export interface IMatch {
     player1Name: string;
     player2Name: string;
     player1Wins: boolean;
+    player1Elo: number;
+    player2Elo: number;
     eloChange: number;
     timestamp: Date;
 }

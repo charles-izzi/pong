@@ -1,39 +1,37 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-card-title>
-                <span class="headline">Match History</span>
-                <v-tooltip bottom>
-                    <template v-slot:activator="{on}">
-                        <v-icon v-on="on" class="ml-2 mb-2">mdi-help-circle-outline</v-icon>
-                    </template>
-                    Long press a match to prompt deletion
-                </v-tooltip>
-            </v-card-title>
-            <v-row class="px-3">
-                <v-col class="py-0 px-3">
-                    <v-select
-                        v-model="playerFilter"
-                        label="Player"
-                        :clearable="true"
-                        :items="$store.getters.dropdownPlayersList"
-                    ></v-select>
-                </v-col>
-                <v-col class="py-0 px-3">
-                    <v-select
-                        v-show="!!playerFilter"
-                        v-model="opponentFilter"
-                        label="Opponent"
-                        :clearable="true"
-                        :items="$store.getters.dropdownPlayersList"
-                    ></v-select>
-                </v-col>
-            </v-row>
-            <match-history-table style="width: 100%"></match-history-table>
-            <action></action>
-            <delete-match></delete-match>
+    <div>
+        <v-card-title>
+            <span class="headline">Match History</span>
+            <v-tooltip bottom>
+                <template v-slot:activator="{on}">
+                    <v-icon v-on="on" class="ml-2 mb-2">mdi-help-circle-outline</v-icon>
+                </template>
+                Long press a match to prompt deletion
+            </v-tooltip>
+        </v-card-title>
+        <v-row class="px-3">
+            <v-col class="py-0 px-3">
+                <v-select
+                    v-model="playerFilter"
+                    label="Player"
+                    :clearable="true"
+                    :items="$store.getters.dropdownPlayersList"
+                ></v-select>
+            </v-col>
+            <v-col class="py-0 px-3">
+                <v-select
+                    v-show="!!playerFilter"
+                    v-model="opponentFilter"
+                    label="Opponent"
+                    :clearable="true"
+                    :items="$store.getters.dropdownPlayersList"
+                ></v-select>
+            </v-col>
         </v-row>
-    </v-container>
+        <match-history-table style="width: 100%"></match-history-table>
+        <action></action>
+        <delete-match></delete-match>
+    </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
@@ -46,7 +44,7 @@ import { IMatchesFilter } from "../business/playModel";
     components: {
         action: Action,
         "match-history-table": MatchHistoryTable,
-        "delete-match": DeleteMatch
+        "delete-match": DeleteMatch,
     }
 })
 export default class MatchHistory extends Vue {

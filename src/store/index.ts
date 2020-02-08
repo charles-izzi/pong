@@ -2,7 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import $axios from "axios";
 import elo from '@/business/elo';
-import { IPlayer, IPlayers, IMatch, IPlayerUpdate, IMatches, IMatchesFilter, IDropdown } from '@/business/playModel';
+import { IPlayer, IPlayers, IMatch, IPlayerUpdate, IMatches, IMatchesFilter, IPlayDialog } from '@/business/playModel';
+import { MatchMaker, IMatch as IMatchMakerMatch } from '@/business/matchMaker';
 
 Vue.use(Vuex);
 const $http = $axios.create({
@@ -17,18 +18,20 @@ export default new Vuex.Store({
         matchesFilter: {} as IMatchesFilter,
         rankedPlayers: [] as string[],
         selectedPlayers: [] as string[],
-        winner: "",
+        play: {} as IPlayDialog,
         showAddDialog: false,
-        showPlayDialog: false,
         showDeleteMatchDialog: false,
-        deleteMatchKey: ""
+        deleteMatchKey: "",
+        matchMaker: {} as MatchMaker,
+        activeMatches: [] as IMatchMakerMatch[],
+        matchMakerPlayed: true,
     },
     getters: {
         players: state => {
             return state.players;
         },
-        unselectedRankedPlayers: state => {
-            return state.rankedPlayers.filter((x: string) => !state.selectedPlayers.includes(x));
+        rankedPlayers: state => {
+            return state.rankedPlayers;
         },
         noPlayersSelected: state => {
             return state.selectedPlayers.length === 0;
@@ -39,6 +42,9 @@ export default new Vuex.Store({
         twoPlayersSelected: state => {
             return state.selectedPlayers.length === 2;
         },
+        moreThanTwoPlayersSelected: state => {
+            return state.selectedPlayers.length > 2;
+        },
         manyPlayersSelected: state => {
             return state.selectedPlayers.length > 2;
         },
@@ -46,7 +52,7 @@ export default new Vuex.Store({
             return state.selectedPlayers.includes(id);
         },
         isPlayerWinner: state => (id: string) => {
-            return state.winner === id;
+            return state.play.winner === id;
         },
         player: state => (id: string) => {
             return state.players[id];
@@ -103,13 +109,10 @@ export default new Vuex.Store({
             state.selectedPlayers.push(id);
         },
         setWinner: (state, winner: string) => {
-            state.winner = winner;
+            state.play.winner = winner;
         },
         setShowAddDialog: (state, val: boolean) => {
             state.showAddDialog = val;
-        },
-        setShowPlayDialog: (state, val: boolean) => {
-            state.showPlayDialog = val;
         },
         setMatchesFilter: (state, matchFilter: IMatchesFilter) => {
             state.matchesFilter = matchFilter;
@@ -120,6 +123,18 @@ export default new Vuex.Store({
         setDeleteMatchKey: (state, val: string) => {
             state.deleteMatchKey = val;
         },
+        setMatchMaker: (state, val: MatchMaker) => {
+            state.matchMaker = val;
+        },
+        setActiveMatches: (state, val: IMatchMakerMatch[]) => {
+            state.activeMatches = val;
+        },
+        setPlay: (state, val: IPlayDialog) => {
+            state.play = val;
+        },
+        setMatchMakerPlayed: (state, val: boolean) => {
+            state.matchMakerPlayed = val;
+        }
     },
     actions: {
         setPlayer: ({ commit }, player: IPlayerUpdate) => {
@@ -141,7 +156,6 @@ export default new Vuex.Store({
                 commit('removeSelectedPlayer', id);
                 return;
             }
-            if (getters.twoPlayersSelected) commit('removeFirstSelection');
             commit('addSelectedPlayer', id);
         },
         setWinner: ({ commit }, id: string) => {
@@ -153,16 +167,26 @@ export default new Vuex.Store({
         play: async ({ state, getters, commit, dispatch }) => {
             let player1 = getters.player(state.selectedPlayers[0]) as IPlayer;
             let player2 = getters.player(state.selectedPlayers[1]) as IPlayer;
-            const player1Wins = state.selectedPlayers[0] === state.winner;
+            const player1Wins = state.selectedPlayers[0] === state.play.winner;
             const eloChange = elo.eloChange(player1.elo, player2.elo, player1Wins);
+            var match = {
+                player1Name: player1.player,
+                player2Name: player2.player, 
+                player1Wins: player1Wins, 
+                player1Elo: player1.elo, 
+                player2Elo: player2.elo, 
+                eloChange
+            } as IMatch;
             player1.elo += (player1Wins ? 1 : -1) * eloChange;
             player2.elo += (player1Wins ? -1 : 1) * eloChange;
-            dispatch('postMatch', { player1Name: player1.player, player2Name: player2.player, player1Wins: player1Wins, eloChange } as IMatch);
+            dispatch('postMatch', match);
             dispatch('putUser', { id: state.selectedPlayers[0], ...player1 } as IPlayerUpdate);
             dispatch('putUser', { id: state.selectedPlayers[1], ...player2 } as IPlayerUpdate);
             commit('setPlayer', { id: state.selectedPlayers[0], ...player1 } as IPlayerUpdate);
             commit('setPlayer', { id: state.selectedPlayers[1], ...player2 } as IPlayerUpdate);
             commit('rankPlayers');
+            if (!state.matchMakerPlayed)
+                dispatch('setMatchMakerPlayed', true);
             return eloChange;
         },
         postMatch: async (context, payload: IMatch) => {
@@ -216,11 +240,31 @@ export default new Vuex.Store({
             player2.elo += match.player1Wins ? match.eloChange : match.eloChange * -1;
             dispatch('putUser', { id: player2Id, ...player2 });
             delete state.matches[matchKey];
-            commit('setMatches', {...state.matches});
+            commit('setMatches', { ...state.matches });
         },
-        setDeleteMatchKey: ({commit}, id: string) => {
+        setDeleteMatchKey: ({ commit }, id: string) => {
             commit('setDeleteMatchKey', id);
         },
+        setMatchMaker: ({ commit }, val: MatchMaker) => {
+            commit('setMatchMaker', val);
+        },
+        setActiveMatches: ({ commit }, val: IMatchMakerMatch[]) => {
+            commit('setActiveMatches', val);
+        },
+        setPlay: ({ commit }, val: IPlayDialog) => {
+            commit('setPlay', val);
+        },
+        resetPlay: ({ state, dispatch }) => {
+            dispatch("setPlay", {
+                player1: state.play.player1,
+                player2: state.play.player2,
+                winner: "",
+                showDialog: false
+            } as IPlayDialog);
+        },
+        setMatchMakerPlayed: ({ commit }, val: boolean) => {
+            commit('setMatchMakerPlayed', val);
+        }
     },
     modules: {}
 });

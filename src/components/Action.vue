@@ -2,26 +2,13 @@
     <div>
         <v-fab-transition>
             <v-btn
-                v-show="$store.getters.noPlayersSelected"
-                @click="$store.dispatch('setShowAddDialog', true)"
+                v-show="$store.getters.onePlayerSelected"
+                @click="goToMatchHistory()"
                 dark
                 fab
                 bottom
                 right
                 color="blue"
-            >
-                <v-icon>mdi-plus</v-icon>
-            </v-btn>
-        </v-fab-transition>
-        <v-fab-transition>
-            <v-btn
-                v-show="$store.getters.onePlayerSelected"
-                @click="goToMatchHistory()"
-                class="lighten-1"
-                fab
-                bottom
-                right
-                color="grey"
             >
                 <v-icon>mdi-account</v-icon>
             </v-btn>
@@ -29,7 +16,7 @@
         <v-fab-transition>
             <v-btn
                 v-show="$store.getters.twoPlayersSelected"
-                @click="$store.dispatch('setShowPlayDialog', true)"
+                @click="playMatch"
                 dark
                 fab
                 bottom
@@ -37,6 +24,19 @@
                 color="green"
             >
                 <v-icon>mdi-table-tennis</v-icon>
+            </v-btn>
+        </v-fab-transition>
+        <v-fab-transition>
+            <v-btn
+                v-show="$store.getters.moreThanTwoPlayersSelected"
+                @click="goToMatchMaker()"
+                dark
+                fab
+                bottom
+                right
+                color="orange"
+            >
+                <v-icon color="black">mdi-tournament</v-icon>
             </v-btn>
         </v-fab-transition>
         <v-fab-transition>
@@ -57,10 +57,19 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { matchHistoryRoute, homeRoute } from "@/router";
+import { matchHistoryRoute, homeRoute, matchMakerRoute } from "@/router";
+import { IPlayDialog } from '../business/playModel';
 @Component({})
 export default class Action extends Vue {
     matchHistoryRoute: string = matchHistoryRoute;
+    playMatch() {
+        this.$store.dispatch("setPlay", {
+            player1: this.$store.state.selectedPlayers[0],
+            player2: this.$store.state.selectedPlayers[1],
+            winner: "",
+            showDialog: true
+        } as IPlayDialog);
+    }
     goToMatchHistory() {
         this.$store.dispatch("setMatchesFilter", {
             playerName: this.$store.state.players[
@@ -70,8 +79,10 @@ export default class Action extends Vue {
         this.$router.push(matchHistoryRoute);
     }
     goToHome() {
-        this.$store.dispatch("resetSelection");
         this.$router.push(homeRoute);
+    }
+    goToMatchMaker() {
+        this.$router.push(matchMakerRoute);
     }
 }
 </script>

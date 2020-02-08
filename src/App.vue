@@ -13,6 +13,10 @@
                 </template>
 
                 <v-list>
+                    <v-list-item @click="$store.dispatch('setShowAddDialog', true)">
+                        <v-list-item-title>Add Player</v-list-item-title>
+                    </v-list-item>
+                    <v-divider></v-divider>
                     <v-list-item @click="goToMatchHistory()">
                         <v-list-item-title>Match History</v-list-item-title>
                     </v-list-item>
@@ -22,6 +26,7 @@
 
         <v-content>
             <router-view></router-view>
+            <play></play>
         </v-content>
     </v-app>
 </template>

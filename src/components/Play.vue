@@ -1,13 +1,13 @@
 <template>
     <div>
-        <v-dialog v-model="$store.state.showPlayDialog" :scrollable="false" max-width="500px">
+        <v-dialog v-model="$store.state.play.showDialog" :scrollable="false" max-width="500px">
             <v-card>
                 <v-card-title>
                     <span>Select Winner</span>
                 </v-card-title>
                 <players
                     dense
-                    :players="$store.state.selectedPlayers"
+                    :players="[$store.state.play.player1, $store.state.play.player2]"
                     :select="selectWinner"
                     :selected="$store.getters.isPlayerWinner"
                     :selectColor="winnerColor"
@@ -19,7 +19,7 @@
                         class="ps-3"
                         color="green darken-1"
                         text
-                        :disabled="!$store.state.winner"
+                        :disabled="!$store.state.play.winner"
                         @click="completeMatch()"
                     >Confirm</v-btn>
                 </v-card-actions>
@@ -40,7 +40,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(player, i) in [player1, player2]" :key="player.player">
+                            <tr v-for="(player, i) in [player1, player2]" :key="i">
                                 <td>{{ player.player }}</td>
                                 <td :style="{color: showNegative(i) ? 'red' : 'green'}">
                                     <span v-show="!showNegative(i)">+</span>
@@ -66,7 +66,7 @@ import { mapState } from "vuex";
 import Component from "vue-class-component";
 import Notification from "./Notification.vue";
 import Players from "./Players.vue";
-import { IPlayer, winnerColor } from "../business/playModel";
+import { IPlayer, winnerColor, IPlayDialog } from "../business/playModel";
 
 @Component({
     components: {
@@ -98,8 +98,7 @@ export default class Play extends Vue {
         this.results = true;
     }
     close() {
-        this.$store.dispatch("setShowPlayDialog", false);
-        this.$store.dispatch("setWinner", "");
+        this.$store.dispatch("resetPlay");
         this.$store.dispatch("resetSelection");
     }
     closeResults() {
@@ -110,12 +109,12 @@ export default class Play extends Vue {
     }
     mounted() {
         this.$store.watch(
-            (state, getters) => state.showPlayDialog,
+            (state, getters) => state.play.showDialog,
             (newValue, oldValue) => {
                 if (newValue) {
-                    this.player1Id = this.$store.state.selectedPlayers[0];
+                    this.player1Id = this.$store.state.play.player1;
                     this.player1 = this.$store.state.players[this.player1Id];
-                    this.player2Id = this.$store.state.selectedPlayers[1];
+                    this.player2Id = this.$store.state.play.player2;
                     this.player2 = this.$store.state.players[this.player2Id];
                 }
             }
