@@ -18,13 +18,13 @@ export default new Vuex.Store({
         matchesFilter: {} as IMatchesFilter,
         rankedPlayers: [] as string[],
         selectedPlayers: [] as string[],
-        play: {} as IPlayDialog,
+        play: { showDialog: false } as IPlayDialog,
+        showPlayDialog: false,
         showAddDialog: false,
         showDeleteMatchDialog: false,
         deleteMatchKey: "",
         matchMaker: {} as MatchMaker,
         activeMatches: [] as IMatchMakerMatch[],
-        matchMakerPlayed: true,
     },
     getters: {
         players: state => {
@@ -111,6 +111,9 @@ export default new Vuex.Store({
         setWinner: (state, winner: string) => {
             state.play.winner = winner;
         },
+        setShowPlayDialog: (state, val: boolean) => {
+            state.play.showDialog = val;
+        },
         setShowAddDialog: (state, val: boolean) => {
             state.showAddDialog = val;
         },
@@ -131,12 +134,14 @@ export default new Vuex.Store({
         },
         setPlay: (state, val: IPlayDialog) => {
             state.play = val;
-        },
-        setMatchMakerPlayed: (state, val: boolean) => {
-            state.matchMakerPlayed = val;
         }
     },
     actions: {
+        getPlayers: async ({ state, dispatch }) => {
+            if (!Object.keys(state.players).length)
+                await dispatch("fetchPlayers");
+            return state.players;
+        },
         setPlayer: ({ commit }, player: IPlayerUpdate) => {
             commit('setPlayer', player);
             commit('rankPlayers');
@@ -164,29 +169,27 @@ export default new Vuex.Store({
         resetSelection: ({ commit }) => {
             commit('resetSelection');
         },
-        play: async ({ state, getters, commit, dispatch }) => {
-            let player1 = getters.player(state.selectedPlayers[0]) as IPlayer;
-            let player2 = getters.player(state.selectedPlayers[1]) as IPlayer;
-            const player1Wins = state.selectedPlayers[0] === state.play.winner;
+        play: async ({ state, getters, commit, dispatch }, match: IPlayDialog) => {
+            let player1 = getters.player(match.player1) as IPlayer;
+            let player2 = getters.player(match.player2) as IPlayer;
+            const player1Wins = match.player1 === match.winner;
             const eloChange = elo.eloChange(player1.elo, player2.elo, player1Wins);
-            var match = {
+            var matchLog = {
                 player1Name: player1.player,
-                player2Name: player2.player, 
-                player1Wins: player1Wins, 
-                player1Elo: player1.elo, 
-                player2Elo: player2.elo, 
+                player2Name: player2.player,
+                player1Wins: player1Wins,
+                player1Elo: player1.elo,
+                player2Elo: player2.elo,
                 eloChange
             } as IMatch;
             player1.elo += (player1Wins ? 1 : -1) * eloChange;
             player2.elo += (player1Wins ? -1 : 1) * eloChange;
-            dispatch('postMatch', match);
-            dispatch('putUser', { id: state.selectedPlayers[0], ...player1 } as IPlayerUpdate);
-            dispatch('putUser', { id: state.selectedPlayers[1], ...player2 } as IPlayerUpdate);
-            commit('setPlayer', { id: state.selectedPlayers[0], ...player1 } as IPlayerUpdate);
-            commit('setPlayer', { id: state.selectedPlayers[1], ...player2 } as IPlayerUpdate);
+            dispatch('postMatch', matchLog);
+            dispatch('putUser', { id: match.player1, ...player1 } as IPlayerUpdate);
+            dispatch('putUser', { id: match.player2, ...player2 } as IPlayerUpdate);
+            commit('setPlayer', { id: match.player1, ...player1 } as IPlayerUpdate);
+            commit('setPlayer', { id: match.player2, ...player2 } as IPlayerUpdate);
             commit('rankPlayers');
-            if (!state.matchMakerPlayed)
-                dispatch('setMatchMakerPlayed', true);
             return eloChange;
         },
         postMatch: async (context, payload: IMatch) => {
@@ -245,25 +248,43 @@ export default new Vuex.Store({
         setDeleteMatchKey: ({ commit }, id: string) => {
             commit('setDeleteMatchKey', id);
         },
-        setMatchMaker: ({ commit }, val: MatchMaker) => {
+        setMatchMaker: ({ commit, state }, val: MatchMaker) => {
             commit('setMatchMaker', val);
+        },
+        saveMatchMaker: ({ commit, state }) => {
+            commit('setMatchMaker', state.matchMaker);
+        },
+        loadMatchMaker: async ({ state, commit, dispatch }) => {
+            if (!Object.keys(state.matchMaker).length) {
+                commit('setMatchMaker', new MatchMaker(await dispatch("getPlayers"), 6));
+            }
         },
         setActiveMatches: ({ commit }, val: IMatchMakerMatch[]) => {
             commit('setActiveMatches', val);
         },
+        loadActiveMatches: ({ state, dispatch }) => {
+            if (state.activeMatches.length < 2 && state.matchMaker.matches)
+                dispatch("setActiveMatches", state.matchMaker.matches.slice(0, 2));
+        },
+        removeActiveMatch: ({ state, commit }, val: IMatchMakerMatch) => {
+            state.activeMatches.splice(state.activeMatches.indexOf(val), 1);
+            commit("setActiveMatches", state.activeMatches);
+        },
         setPlay: ({ commit }, val: IPlayDialog) => {
             commit('setPlay', val);
         },
-        resetPlay: ({ state, dispatch }) => {
-            dispatch("setPlay", {
+        completeMatch: async ({ state, commit, dispatch }) => {
+            if (state.play.callback)
+                state.play.callback();
+            const match = {
                 player1: state.play.player1,
                 player2: state.play.player2,
-                winner: "",
-                showDialog: false
-            } as IPlayDialog);
-        },
-        setMatchMakerPlayed: ({ commit }, val: boolean) => {
-            commit('setMatchMakerPlayed', val);
+                winner: state.play.winner,
+                showDialog: false,
+            };
+            const eloChange = await dispatch("play", match);
+            commit("setPlay", match);
+            return eloChange;
         }
     },
     modules: {}

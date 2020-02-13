@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <v-container>
         <v-card-title>
             <span class="headline">Match History</span>
             <v-tooltip bottom>
@@ -31,7 +31,7 @@
         <match-history-table style="width: 100%"></match-history-table>
         <action></action>
         <delete-match></delete-match>
-    </div>
+    </v-container>
 </template>
 <script lang="ts">
 import Vue from "vue";
@@ -68,8 +68,6 @@ export default class MatchHistory extends Vue {
         } as IMatchesFilter);
     }
     mounted() {
-        if (!Object.keys(this.$store.state.players).length)
-            this.$store.dispatch("fetchPlayers");
         this.$store.dispatch("fetchMatches");
     }
 }

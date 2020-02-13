@@ -12,8 +12,8 @@
                 :name="$store.getters.player(val).player"
                 :elo="$store.getters.player(val).elo"
                 :rank="$store.getters.player(val).rank"                
-                :select="select"
-                :selected="selected"
+                :getSelected="getSelected"
+                :setSelected="setSelected"
                 :selectColor="selectColor"
             ></player>
         </v-col>
@@ -28,9 +28,9 @@ import Player from "./Player.vue";
 @Component({
     props: {
         players: Array,
-        select: Function,
-        selected: Function,
         selectColor: String,
+        setSelected: Function,
+        getSelected: Function
     },
     components: {
         player: Player

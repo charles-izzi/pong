@@ -1,5 +1,5 @@
 <template>
-    <v-card @click="select(id)" :color="color">
+    <v-card @click="setSelected(id)" :color="color">
         <v-card-text>
             <v-row class="mx-4">
                 <h2 :class="{'rank-col': !dense, 'rank-col-dense': dense}">{{rank}}</h2>
@@ -21,10 +21,10 @@ import { IPlayer, unselectedColor } from '@/business/playModel';
         name: String,
         elo: Number,
         rank: Number,
-        dense: Boolean,
-        select: Function,
-        selectColor: String,        
-        selected: Function,
+        dense: Boolean,        
+        getSelected: Function,
+        setSelected: Function,
+        selectColor: String,
     }
 })
 export default class Player extends Vue {
@@ -33,10 +33,10 @@ export default class Player extends Vue {
     elo!: number;
     playing!: boolean;
     selectColor!: string;
-    select!: (id: string) => void;
-    selected!: (id: string) => boolean;
+    getSelected!: (id: string) => boolean;
+    setSelected!: (id: string) => void;
     get color() {
-        if (this.selected(this.id)) return this.selectColor;
+        if (this.getSelected && this.getSelected(this.id)) return this.selectColor;
         return unselectedColor;
     }
 }

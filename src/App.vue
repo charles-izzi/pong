@@ -44,5 +44,9 @@ export default class App extends Vue {
         this.$store.dispatch("setMatchesFilter", {});
         this.$router.push(matchHistoryRoute);
     }
+    async mounted() {
+        if (!Object.keys(this.$store.state.players).length) 
+            this.$store.dispatch("fetchPlayers");
+    }
 }
 </script>

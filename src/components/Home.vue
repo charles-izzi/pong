@@ -15,9 +15,9 @@
                                     >mdi-help-circle-outline</v-icon>
                                 </template>
                                 <ul>
-                                    <li>Select 0 to Add a Player</li>
                                     <li>Select 1 to View Player Details</li>
                                     <li>Select 2 to Play a Match</li>
+                                    <li>Select 3 or more to Create Matches</li>
                                 </ul>
                             </v-tooltip>
                             <v-spacer></v-spacer>
@@ -36,8 +36,8 @@
                 <add-player></add-player>
                 <players
                     :players="$store.getters.rankedPlayers"
-                    :select="selectPlayer"
-                    :selected="$store.getters.isPlayerSelected"
+                    :setSelected="selectPlayer"
+                    :getSelected="$store.getters.isPlayerSelected"
                     :selectColor="selectedColor"
                 ></players>
             </v-col>
@@ -69,8 +69,7 @@ export default class Home extends Vue {
         this.$store.dispatch("selectPlayer", id);
     }
     async mounted() {
-        this.stickyWidth = (this.$refs.container as HTMLElement).clientWidth;        
-        await this.$store.dispatch("fetchPlayers");
+        this.stickyWidth = (this.$refs.container as HTMLElement).clientWidth;
     }
 }
 </script>

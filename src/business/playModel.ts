@@ -24,6 +24,7 @@ export interface IPlayDialog {
     player2: string;
     winner: string;
     showDialog: boolean;
+    callback: () => void;
 }
 
 export interface IPlayerUpdate extends IPlayer {
