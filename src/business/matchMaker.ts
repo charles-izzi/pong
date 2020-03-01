@@ -86,10 +86,13 @@ export class MatchMaker {
             const thisRoundPlayers = Object.keys(this.plannedPlayers)
                 .filter((x: string) => this.plannedPlayers[x].gamesPlayed === this.plannedRound);
             if (thisRoundPlayers.length === 0) return;
+            if (thisRoundPlayers.length === 1) {
+                this.matchOddPlayer(thisRoundPlayers[0]);
+                continue;
+            }
             const roundOfMatches = this.getMinDiffDistinctMatches(thisRoundPlayers) as IPotentialMatches;
             this.memo = {};
             this.updatePlannedPlayers(roundOfMatches.matches);
-            this.plannedRound++;
             this.matches = this.matches.concat(roundOfMatches.matches);
             this.matchOddPlayer(roundOfMatches.oddPlayer);
         }
@@ -156,10 +159,10 @@ export class MatchMaker {
         this.playerPool[match.player1Id].playersPlayed.add(match.player2Id);
         this.playerPool[match.player2Id].playersPlayed.add(match.player1Id);
 
-        if (this.playerPool[match.player1Id].playersPlayed.size >= this.activePlayerCount - 1) {
+        if (this.playerPool[match.player1Id].playersPlayed.size >= Object.keys(this.plannedPlayers).length - 1) {
             this.playerPool[match.player1Id].playersPlayed.clear();
         }
-        if (this.playerPool[match.player2Id].playersPlayed.size >= this.activePlayerCount - 1) {
+        if (this.playerPool[match.player2Id].playersPlayed.size >= Object.keys(this.plannedPlayers).length - 1) {
             this.playerPool[match.player2Id].playersPlayed.clear();
         }
     }
@@ -179,31 +182,10 @@ export class MatchMaker {
                 this.plannedPlayers[plannedMatches[i].player2Id].playersPlayed.clear();
             }
         }
+        
+        this.plannedRound = this.getMinRound(this.plannedPlayers);
     }
-
-    private matchOddPlayer(oddPlayer: string | null) {
-        if (oddPlayer === null) return;
-        const playerIds = Object.keys(this.plannedPlayers);
-        let minDiffMatch: IPotentialMatch | null = null;
-        for (var i = 0; i < playerIds.length; i++) {
-            const matchCandidate = this.plannedPlayers[playerIds[i]];
-            if (playerIds[i] === oddPlayer || matchCandidate.gamesPlayed > this.plannedRound || matchCandidate.playersPlayed.has(oddPlayer)) continue;
-            const ratingDifference = Math.abs(this.players[playerIds[i]].elo - this.players[oddPlayer].elo);
-            if (minDiffMatch === null || minDiffMatch.ratingDifference > ratingDifference) {
-                minDiffMatch = {
-                    ratingDifference,
-                    match: {
-                        player1Id: oddPlayer,
-                        player2Id: playerIds[i],
-                        priority: this.plannedPlayers[oddPlayer].gamesPlayed + this.plannedPlayers[playerIds[i]].gamesPlayed
-                    }
-                };
-            }
-        }
-        if (minDiffMatch === null) return;
-        this.updatePlannedPlayers([minDiffMatch.match]);
-        this.matches.push(minDiffMatch.match);
-    }
+    
 
     private addPlayer(val: string) {
         if (!this.playerPool.hasOwnProperty(val)) {
@@ -231,22 +213,16 @@ export class MatchMaker {
             }
         });
 
-        //track planned players games played from the matches that weren't reset
+        //ignore exceptForTheseMatches if the players in them have become inactive
         for (var i = 0; i < exceptForTheseMatches.length; i++) {
             if (!this.plannedPlayers.hasOwnProperty(exceptForTheseMatches[i].player1Id) || !this.plannedPlayers.hasOwnProperty(exceptForTheseMatches[i].player2Id)) {
                 exceptForTheseMatches.splice(i, 1);
                 i--;
-            } else {
-                this.plannedPlayers[exceptForTheseMatches[i].player1Id].gamesPlayed++;
-                this.plannedPlayers[exceptForTheseMatches[i].player2Id].gamesPlayed++;
             }
         }
-        this.matches = [...exceptForTheseMatches];
 
-        //reset round and increase the planned round if the number of players in 
-        // the active matches is greater than the number of planned players
-        this.plannedRound = this.round;
-        this.plannedRound = this.getMinRound(this.plannedPlayers);
+        this.updatePlannedPlayers(exceptForTheseMatches);
+        this.matches = [...exceptForTheseMatches];
     }
 
     private getMatchRatingSum(match: IMatch) {
@@ -254,7 +230,7 @@ export class MatchMaker {
     }
 
     private deepCopyPlayer(player: IPlayer) {
-        const activePlayersPlayed = this.getActivePlayersPlayed(player);
+        const activePlayersPlayed = this.getPlayersPlayed(player);
         return {
             gamesPlayed: player.gamesPlayed,
             isActive: player.isActive,
@@ -285,10 +261,11 @@ export class MatchMaker {
         return JSON.parse(JSON.stringify(matches));
     }
 
-    private getActivePlayersPlayed(player: IPlayer) {
+    private getPlayersPlayed(player: IPlayer) {
         const playersPlayed = new Set<string>();
+        if (player.playersPlayed.size >= this.activePlayerCount - 1) return playersPlayed;
         player.playersPlayed.forEach((x: string) => {
-            if (this.playerPool[x].isActive && player.playersPlayed.has(x))
+            if (player.playersPlayed.has(x))
                 playersPlayed.add(x);
         })
         return playersPlayed;
