@@ -24,7 +24,13 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="gray darken-1" text @click="close()">Close</v-btn>
-        <v-btn class="ps-3" color="primary darken-1" text @click="saveAndClose()">Add</v-btn>
+        <v-btn
+          class="ps-3"
+          color="primary darken-1"
+          text
+          @click="saveAndClose()"
+          >Add</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -42,15 +48,14 @@ export default class AddPlayer extends Vue {
       return !!v || "Name is required";
     },
     (v: string) => {
-      return !v || v.length < 1 ||
-        v.length > 2 ||
-        "Name needs at least 3 characters"
-      ;
+      return (
+        !v || v.length < 1 || v.length > 2 || "Name needs at least 3 characters"
+      );
     },
     (v: string) => {
-      return !v || !this.$store.getters.playerByName(v) ||
-        "Name already exists"
-      ;
+      return (
+        !v || !this.$store.getters.playerByName(v) || "Name already exists"
+      );
     }
   ];
   name: string = "";

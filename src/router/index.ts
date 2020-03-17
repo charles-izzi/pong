@@ -25,7 +25,7 @@ const routes = [
     path: matchMakerRoute,
     name: "matchMaker",
     component: MatchMaker
-  },
+  }
 ];
 
 const router = new VueRouter({
