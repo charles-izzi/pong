@@ -24,7 +24,7 @@
               <v-btn
                 color="primary darken-1"
                 text
-                @click="$store.dispatch('resetSelection')"
+                @click="$repo.commit.players.resetSelection()"
                 >Clear</v-btn
               >
             </v-row>
@@ -36,9 +36,9 @@
       <v-col cols="12" style="padding-top:0;">
         <add-player></add-player>
         <players
-          :players="$store.getters.rankedPlayers"
+          :players="$repo.getters.players.rankedPlayers"
           :setSelected="selectPlayer"
-          :getSelected="$store.getters.isPlayerSelected"
+          :getSelected="$repo.getters.players.isPlayerSelected"
           :selectColor="selectedColor"
         ></players>
       </v-col>
@@ -53,7 +53,7 @@ import Component from "vue-class-component";
 import AddPlayer from "./AddPlayer.vue";
 import Players from "./Players.vue";
 import Action from "./Action.vue";
-import { selectedColor } from "@/business/playModel";
+import { selectedColor } from "@/constants";
 
 @Component({
   components: {
@@ -67,7 +67,7 @@ export default class Home extends Vue {
   scrollTop: number = 0;
   stickyWidth: number = 0;
   selectPlayer(id: string) {
-    this.$store.dispatch("selectPlayer", id);
+    this.$repo.dispatch.players.selectPlayer(id);
   }
   async mounted() {
     this.stickyWidth = (this.$refs.container as HTMLElement).clientWidth;

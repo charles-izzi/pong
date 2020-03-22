@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="$store.state.showDeleteMatchDialog" max-width="350">
+  <v-dialog v-model="$repo.state.matchHistory.showDeleteMatchDialog" max-width="350">
     <v-card>
       <v-card-title class="headline">Delete Match?</v-card-title>
 
@@ -20,7 +20,7 @@
         <v-btn
           color="gray darken-1"
           text
-          @click="$store.dispatch('setShowDeleteMatchDialog', false)"
+          @click="$repo.matchHistory.commit.setShowDeleteMatchDialog(false)"
           >Cancel</v-btn
         >
 
@@ -40,8 +40,8 @@ import MatchHistoryTable from "./MatchHistoryTable.vue";
 })
 export default class DeleteMatch extends Vue {
   get match() {
-    if (!this.$store.state.deleteMatchKey) return "";
-    return this.$store.getters.match(this.$store.state.deleteMatchKey);
+    if (!this.$repo.state.matchHistory.deleteMatchKey) return "";
+    return this.$repo.getters.matchHistory.match(this.$repo.state.matchHistory.deleteMatchKey);
   }
   get player1() {
     return this.match ? this.match.player1Name : "";
@@ -53,8 +53,8 @@ export default class DeleteMatch extends Vue {
     return this.match ? this.match.player1Wins : false;
   }
   deleteMatch() {
-    this.$store.dispatch("removeMatch", this.$store.state.deleteMatchKey);
-    this.$store.dispatch("setShowDeleteMatchDialog", false);
+    this.$repo.dispatch.matchHistory.removeMatch(this.$repo.state.matchHistory.deleteMatchKey);
+    this.$repo.commit.matchHistory.setShowDeleteMatchDialog(false);
   }
 }
 </script>

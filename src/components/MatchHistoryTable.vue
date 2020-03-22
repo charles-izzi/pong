@@ -43,38 +43,39 @@ import Component from "vue-class-component";
 export default class MatchHistoryTable extends Vue {
   isDeleteDialog!: boolean;
   get matches() {
-    if (this.isDeleteDialog) return [this.$store.state.deleteMatchKey];
-    else return this.$store.getters.filteredMatches;
+    if (this.isDeleteDialog)
+      return [this.$repo.state.matchHistory.deleteMatchKey];
+    else return this.$repo.getters.matchHistory.filteredMatches;
   }
   getPlayer(matchKey: string) {
     if (this.player1IsPlayer(matchKey))
-      return this.$store.getters.match(matchKey).player1Name;
-    return this.$store.getters.match(matchKey).player2Name;
+      return this.$repo.getters.matchHistory.match(matchKey).player1Name;
+    return this.$repo.getters.matchHistory.match(matchKey).player2Name;
   }
   getOpponent(matchKey: string) {
     if (this.player1IsPlayer(matchKey))
-      return this.$store.getters.match(matchKey).player2Name;
-    return this.$store.getters.match(matchKey).player1Name;
+      return this.$repo.getters.matchHistory.match(matchKey).player2Name;
+    return this.$repo.getters.matchHistory.match(matchKey).player1Name;
   }
   isWin(matchKey: string) {
     return (
       (this.player1IsPlayer(matchKey) &&
-        this.$store.getters.match(matchKey).player1Wins) ||
+        this.$repo.getters.matchHistory.match(matchKey).player1Wins) ||
       (!this.player1IsPlayer(matchKey) &&
-        !this.$store.getters.match(matchKey).player1Wins)
+        !this.$repo.getters.matchHistory.match(matchKey).player1Wins)
     );
   }
   player1IsPlayer(matchKey: string) {
     return (
-      !this.$store.state.matchesFilter.playerName ||
-      this.$store.state.matchesFilter.playerName ===
-        this.$store.getters.match(matchKey).player1Name
+      !this.$repo.state.matchHistory.matchesFilter.playerName ||
+      this.$repo.state.matchHistory.matchesFilter.playerName ===
+        this.$repo.getters.matchHistory.match(matchKey).player1Name
     );
   }
   showDeleteDialog(matchKey: string) {
     if (this.isDeleteDialog) return;
-    this.$store.dispatch("setShowDeleteMatchDialog", true);
-    this.$store.dispatch("setDeleteMatchKey", matchKey);
+    this.$repo.commit.matchHistory.setShowDeleteMatchDialog(true);
+    this.$repo.commit.matchHistory.setDeleteMatchKey(matchKey);
   }
 }
 </script>

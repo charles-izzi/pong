@@ -1,4 +1,4 @@
-import { IPlayers as IPlayerData } from "@/business/playModel";
+import { IPlayers as IPlayerData } from '@/store/players';
 import { Player } from './player';
 import { IMatch } from './match';
 
@@ -21,6 +21,7 @@ export class Players {
     }
 
     getCurrentRoundPlayers() {
+        this.currentRound = this.getCurrentRound();
         return this.players.filter(
             (x: Player) => x.gamesPlayed === this.currentRound
         );

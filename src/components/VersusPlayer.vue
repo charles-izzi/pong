@@ -60,7 +60,7 @@ export default class VersusPlayer extends Vue {
   playerId!: string;
 
   get player() {
-    return this.$store.getters.player(this.playerId);
+    return this.$repo.getters.players.player(this.playerId);
   }
 }
 </script>

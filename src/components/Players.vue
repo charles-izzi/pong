@@ -9,9 +9,9 @@
     >
       <player
         :id="val"
-        :name="$store.getters.player(val).player"
-        :elo="$store.getters.player(val).elo"
-        :rank="$store.getters.player(val).rank"
+        :name="$repo.getters.players.player(val).player"
+        :elo="$repo.getters.players.player(val).elo"
+        :rank="$repo.getters.players.player(val).rank"
         :getSelected="getSelected"
         :setSelected="setSelected"
         :selectColor="selectColor"
@@ -22,7 +22,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { IPlayers } from "../business/playModel";
+import { IPlayers } from "@/store/players";
 import Player from "./Player.vue";
 
 @Component({

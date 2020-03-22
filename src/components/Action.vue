@@ -2,7 +2,7 @@
   <div>
     <v-fab-transition>
       <v-btn
-        v-show="$store.getters.onePlayerSelected"
+        v-show="$repo.getters.players.onePlayerSelected"
         @click="goToMatchHistory()"
         dark
         fab
@@ -15,7 +15,7 @@
     </v-fab-transition>
     <v-fab-transition>
       <v-btn
-        v-show="$store.getters.twoPlayersSelected"
+        v-show="$repo.getters.players.twoPlayersSelected"
         @click="playMatch"
         dark
         fab
@@ -30,7 +30,7 @@
       <v-btn
         v-show="
           $router.currentRoute.path === homeRoute &&
-            $store.getters.moreThanTwoPlayersSelected
+            $repo.getters.players.moreThanTwoPlayersSelected
         "
         @click="showMatchMakerMenu = true"
         dark
@@ -91,7 +91,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { matchHistoryRoute, homeRoute, matchMakerRoute } from "@/router";
-import { IPlayDialog } from "../business/playModel";
+import { IPlayDialog } from "@/store/play";
 import MatchMakerMenu from "./MatchMakerMenu.vue";
 @Component({
   props: {
@@ -107,18 +107,18 @@ export default class Action extends Vue {
   homeRoute: string = homeRoute;
   showMatchMakerMenu: boolean = false;
   playMatch() {
-    this.$store.dispatch("setPlay", {
-      player1: this.$store.state.selectedPlayers[0],
-      player2: this.$store.state.selectedPlayers[1],
+    this.$repo.commit.play.setPlay({
+      player1: this.$repo.state.players.selectedPlayers[0],
+      player2: this.$repo.state.players.selectedPlayers[1],
       winner: "",
       showDialog: true,
-      callback: () => this.$store.dispatch("resetSelection")
-    } as IPlayDialog);
+      callback: () => this.$repo.commit.players.resetSelection()
+    });
   }
   goToMatchHistory() {
-    this.$store.dispatch("setMatchesFilter", {
-      playerName: this.$store.getters.player(
-        this.$store.state.selectedPlayers[0]
+    this.$repo.commit.matchHistory.setMatchesFilter({
+      playerName: this.$repo.getters.players.player(
+        this.$repo.state.players.selectedPlayers[0]
       ).player
     });
     this.$router.push(matchHistoryRoute);

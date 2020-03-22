@@ -11,25 +11,25 @@ export const matchHistoryRoute = "/MatchHistory";
 export const matchMakerRoute = "/MatchMaker";
 
 const routes = [
-  {
-    path: homeRoute,
-    name: "home",
-    component: Home
-  },
-  {
-    path: matchHistoryRoute,
-    name: "matchHistory",
-    component: MatchHistory
-  },
-  {
-    path: matchMakerRoute,
-    name: "matchMaker",
-    component: MatchMaker
-  }
+    {
+        path: homeRoute,
+        name: "home",
+        component: Home,
+    },
+    {
+        path: matchHistoryRoute,
+        name: "matchHistory",
+        component: MatchHistory,
+    },
+    {
+        path: matchMakerRoute,
+        name: "matchMaker",
+        component: MatchMaker,
+    },
 ];
 
 const router = new VueRouter({
-  routes
+    routes,
 });
 
 export default router;

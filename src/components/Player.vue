@@ -17,7 +17,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { IPlayer, unselectedColor } from "@/business/playModel";
+import { IPlayer } from "@/store/players";
+import { unselectedColor } from "@/constants";
 
 @Component<Player>({
   props: {

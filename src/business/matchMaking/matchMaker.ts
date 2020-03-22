@@ -1,10 +1,8 @@
-import { IPlayers as IPlayerData } from "@/business/playModel";
+import { IPlayers as IPlayerData } from '@/store/players';
 import { Players } from './players';
 import { Player } from './player';
 import { PotentialMatches } from './potentialMatches';
 import { Match } from './match';
-
-
 
 interface IMemo {
     [key: string]: PotentialMatches | null;
@@ -13,11 +11,9 @@ interface IMemo {
 export class MatchMaker {
     playerPool: Players = new Players();
     plannedPlayers: Players = new Players();
-    round: number = 0;
-    plannedRound: number = 0;
-    matches: Match[] = [];
-    memo: IMemo = {};
-    constructor(private playerData: IPlayerData, private matchCount: number) { }
+    private matches: Match[] = [];
+    private memo: IMemo = {};
+    constructor(public playerData: IPlayerData, private matchCount: number) { }
 
     setPlayers(newPlayers: string[], activeMatches: Match[]) {
         this.playerPool.setPlayers(newPlayers);
@@ -83,7 +79,7 @@ export class MatchMaker {
         //check min differential for every match with the candidate
         for (let i = 1; i < thisRoundPlayers.players.length; i++) {
             //distinct check
-            if (candidate.playersPlayed.has(thisRoundPlayers.players[i].id)) continue;
+            if (!candidate.canPlayPlayer(thisRoundPlayers.players[i])) continue;
 
             const remainingPlayers = new Players(thisRoundPlayers.players);
             remainingPlayers.removeAt(i);
@@ -108,7 +104,7 @@ export class MatchMaker {
         let minDiffMatch: Match | null = null;
         for (var i = 0; i < plannedPlayers.players.length; i++) {
             const player = plannedPlayers.players[i];
-            if (player.id === oddPlayer.id || player.playersPlayed.has(oddPlayer.id))
+            if (player.id === oddPlayer.id || !player.canPlayPlayer(oddPlayer))
                 continue;
 
             const potentialMatch = new Match(this.playerData, oddPlayer, player);

@@ -1,6 +1,6 @@
 import { Match } from "@/business/matchMaking/match";
-import { playerData } from './matchMaker.spec';
-import { Player } from '@/business/matchMaking/player';
+import { playerData } from "../behavior/matchMaker.spec";
+import { Player } from "@/business/matchMaking/player";
 
 describe("Match Maker Match", () => {
     it("match is constructed properly with 1 argument", () => {
@@ -10,7 +10,7 @@ describe("Match Maker Match", () => {
             player2Id: "",
             priority: 0,
             ratingDifferential: 0,
-            playerData
+            playerData,
         });
     });
     it("match is constructed properly with 3 arguments", () => {
@@ -20,7 +20,7 @@ describe("Match Maker Match", () => {
             player2Id: "2",
             priority: 0,
             ratingDifferential: 50,
-            playerData
+            playerData,
         });
     });
     it("getMatchRating of player1 and player2 returns 1350+1300=2650", () => {
@@ -35,7 +35,7 @@ describe("Match Maker Match", () => {
             player2Id: "2",
             priority: 0,
             ratingDifferential: 50,
-            playerData
+            playerData,
         });
     });
 });

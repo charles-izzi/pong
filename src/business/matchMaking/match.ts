@@ -1,5 +1,5 @@
-import { IPlayers as IPlayerData } from "@/business/playModel";
 import { Player } from './player';
+import { IPlayers as IPlayerData } from '@/store/players';
 
 export interface IMatch {
     player1Id: string;

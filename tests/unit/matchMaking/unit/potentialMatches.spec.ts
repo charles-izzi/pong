@@ -1,14 +1,14 @@
 import { PotentialMatches } from "@/business/matchMaking/potentialMatches";
-import { Player } from '@/business/matchMaking/player';
-import { Match } from '@/business/matchMaking/match';
-import { playerData } from './matchMaker.spec';
+import { Player } from "@/business/matchMaking/player";
+import { Match } from "@/business/matchMaking/match";
+import { playerData } from "../behavior/matchMaker.spec";
 
 describe("Match Maker Potential Matches", () => {
     it("potential matches constructed without odd player", () => {
         const potentialMatches = new PotentialMatches(null);
         expect(potentialMatches).toEqual({
             matches: [],
-            oddPlayer: null
+            oddPlayer: null,
         });
     });
     it("potential matches constructed with odd player", () => {
@@ -16,7 +16,7 @@ describe("Match Maker Potential Matches", () => {
         const potentialMatches = new PotentialMatches(player1);
         expect(potentialMatches).toEqual({
             matches: [],
-            oddPlayer: player1
+            oddPlayer: player1,
         });
     });
     it("add match adds a copy of match", () => {
