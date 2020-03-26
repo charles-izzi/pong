@@ -4,9 +4,7 @@
             <span class="headline">Match History</span>
             <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" class="ml-2 mb-2"
-                        >mdi-help-circle-outline</v-icon
-                    >
+                    <v-icon v-on="on" class="ml-2 mb-2">mdi-help-circle-outline</v-icon>
                 </template>
                 Long press a match to prompt deletion
             </v-tooltip>
@@ -41,7 +39,6 @@ import Component from "vue-class-component";
 import Action from "./Action.vue";
 import MatchHistoryTable from "./MatchHistoryTable.vue";
 import DeleteMatch from "./DeleteMatch.vue";
-import { IMatchesFilter } from "@/store/matchHistory";
 @Component({
     components: {
         action: Action,
@@ -50,7 +47,7 @@ import { IMatchesFilter } from "@/store/matchHistory";
     },
 })
 export default class MatchHistory extends Vue {
-    deleteMatchKey: string = "";
+    deleteMatchKey = "";
     get playerFilter() {
         return this.$repo.state.matchHistory.matchesFilter.playerName;
     }

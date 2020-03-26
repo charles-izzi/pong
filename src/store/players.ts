@@ -1,4 +1,4 @@
-import { $http, moduleActionContext, moduleGetterContext } from ".";
+import { $http, moduleActionContext } from ".";
 import { defineModule } from "direct-vuex";
 
 export interface PlayersModuleState {
@@ -125,7 +125,5 @@ export const playersModule = defineModule({
 });
 
 //direct-vuex - used for typing on vuex getters, mutations and actions
-const playersGetterContext = (args: [any, any, any, any]) =>
-    moduleGetterContext(args, playersModule);
 const playersActionContext = (context: any) =>
     moduleActionContext(context, playersModule);

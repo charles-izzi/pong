@@ -33,11 +33,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Home from "./components/Home.vue";
 import Component from "vue-class-component";
 import { matchHistoryRoute, homeRoute } from "./router";
-import store from "./store";
-import { IMatchesFilter } from "@/store/matchHistory";
+import { IMatchesFilter } from "./store/matchHistory";
 
 @Component({})
 export default class App extends Vue {

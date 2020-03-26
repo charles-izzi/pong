@@ -1,6 +1,6 @@
 import elo from "@/business/elo";
 import { defineModule } from "direct-vuex";
-import { moduleGetterContext, moduleActionContext } from ".";
+import { moduleActionContext } from ".";
 import { IPlayer } from "./players";
 import { IMatch } from "./matchHistory";
 
@@ -48,15 +48,15 @@ export const playModule = defineModule({
             const { rootCommit, rootGetters, rootDispatch } = playActionContext(
                 context
             );
-            let player1 = rootGetters.players.player(match.player1) as IPlayer;
-            let player2 = rootGetters.players.player(match.player2) as IPlayer;
+            const player1 = rootGetters.players.player(match.player1) as IPlayer;
+            const player2 = rootGetters.players.player(match.player2) as IPlayer;
             const player1Wins = match.player1 === match.winner;
             const eloChange = elo.eloChange(
                 player1.elo,
                 player2.elo,
                 player1Wins
             );
-            var matchLog = {
+            const matchLog = {
                 player1Name: player1.player,
                 player2Name: player2.player,
                 player1Wins: player1Wins,
@@ -91,7 +91,5 @@ export const playModule = defineModule({
 });
 
 //direct-vuex - used for typing on vuex getters, mutations and actions
-const playGetterContext = (args: [any, any, any, any]) =>
-    moduleGetterContext(args, playModule);
 const playActionContext = (context: any) =>
     moduleActionContext(context, playModule);

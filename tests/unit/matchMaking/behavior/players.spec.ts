@@ -2,7 +2,7 @@ import { Player } from "@/business/matchMaking/player";
 import { playerData } from "./matchMaker.spec";
 import { Players } from "@/business/matchMaking/players";
 
-let players = new Players();
+const players = new Players();
 players.setPlayers(["1", "2", "3", "4", "5", "6"]);
 
 const player1 = new Player("1");
@@ -12,8 +12,6 @@ const player4 = new Player("4");
 const player5 = new Player("5");
 const player6 = new Player("6");
 const player7 = new Player("7");
-const player8 = new Player("8");
-const player9 = new Player("9");
 
 function testPlayerState(
     testName: string,
@@ -53,7 +51,9 @@ describe("Match Maker Players Behavior", () => {
     });
     testPlayerState(
         "set players",
-        () => {},
+        () => {
+            //do nothing
+        },
         [player1, player2, player3, player4, player5, player6],
         [player1, player2, player3, player4, player5, player6]
     );

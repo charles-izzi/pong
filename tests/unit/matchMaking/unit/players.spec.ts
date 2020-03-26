@@ -1,7 +1,5 @@
 import { Player } from "@/business/matchMaking/player";
-import { playerData } from "../behavior/matchMaker.spec";
 import { Players } from "@/business/matchMaking/players";
-import { Match } from "@/business/matchMaking/match";
 
 describe("Match Maker Players", () => {
     it("players are constructed properly with no arguments", () => {

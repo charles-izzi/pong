@@ -4,9 +4,7 @@
             <span class="headline">Match Maker</span>
             <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" class="ml-2 mb-2"
-                        >mdi-help-circle-outline</v-icon
-                    >
+                    <v-icon v-on="on" class="ml-2 mb-2">mdi-help-circle-outline</v-icon>
                 </template>
                 Matches are made by
                 <ol>
@@ -20,16 +18,12 @@
                 <ul>
                     <li>Click a player to complete a match</li>
                     <li>Click an Up-Next match to move it to Playing-Now</li>
-                    <li>
-                        Click the group-transfer button to adjust player pool
-                    </li>
+                    <li>Click the group-transfer button to adjust player pool</li>
                 </ul>
             </v-tooltip>
         </v-card-title>
         <div class="text-right">
-            <v-card-title class="subtitle-1" style="padding-bottom: 0;"
-                >Playing Now</v-card-title
-            >
+            <v-card-title class="subtitle-1" style="padding-bottom: 0;">Playing Now</v-card-title>
             <versus
                 v-for="(val, i) in $repo.state.matchMaker.activeMatches"
                 :key="i"
@@ -41,9 +35,7 @@
                 :zIndex="1"
             ></versus>
         </div>
-        <v-card-title class="subtitle-1" style="padding-bottom: 0;"
-            >Up Next</v-card-title
-        >
+        <v-card-title class="subtitle-1" style="padding-bottom: 0;">Up Next</v-card-title>
         <versus
             v-for="(val, i) in upNextMatches"
             :key="i"
@@ -55,7 +47,7 @@
             class="my-1"
         ></versus>
 
-        <v-overlay :z-index="0" :value="overlay"> </v-overlay>
+        <v-overlay :z-index="0" :value="overlay"></v-overlay>
         <action :overlay="overlay" @cancel-overlay="overlay = false"></action>
     </v-container>
 </template>
@@ -64,7 +56,6 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import Versus from "./Versus.vue";
 import Action from "./Action.vue";
-import { MatchMaker as MatchMakerService } from "@/business/matchMaking/matchMaker";
 import { Match } from "@/business/matchMaking/match";
 
 @Component({
@@ -74,7 +65,7 @@ import { Match } from "@/business/matchMaking/match";
     },
 })
 export default class MatchMaker extends Vue {
-    overlay: boolean = false;
+    overlay = false;
     zIndex: number[] = new Array(6);
     swapMatch: Match | null = null;
     get upNextMatches() {

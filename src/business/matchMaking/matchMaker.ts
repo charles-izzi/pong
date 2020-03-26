@@ -47,7 +47,7 @@ export class MatchMaker {
             .slice(0, this.matchCount);
     }
 
-    private makeMatches(players: Players) {        
+    private makeMatches(players: Players) {
         while (this.matches.length < this.matchCount) {
             const thisRoundPlayers = players.getCurrentRoundPlayers();
             if (thisRoundPlayers.length === 0) return;
@@ -71,10 +71,10 @@ export class MatchMaker {
 
         //check memo
         const memoKey = thisRoundPlayers.getMemoKey(this.playerData);
-        if (this.memo.hasOwnProperty(memoKey)) return this.memo[memoKey];
+        if (Object.hasOwnProperty.call(this.memo, memoKey)) return this.memo[memoKey];
 
         let minDiffMatches: PotentialMatches | null = null;
-        var candidate = thisRoundPlayers.players[0];
+        const candidate = thisRoundPlayers.players[0];
 
         //check min differential for every match with the candidate
         for (let i = 1; i < thisRoundPlayers.players.length; i++) {
@@ -102,7 +102,7 @@ export class MatchMaker {
     private matchOddPlayer(plannedPlayers: Players, oddPlayer: Player | null) {
         if (oddPlayer === null) return;
         let minDiffMatch: Match | null = null;
-        for (var i = 0; i < plannedPlayers.players.length; i++) {
+        for (let i = 0; i < plannedPlayers.players.length; i++) {
             const player = plannedPlayers.players[i];
             if (player.id === oddPlayer.id || !player.canPlayPlayer(oddPlayer))
                 continue;
@@ -128,7 +128,7 @@ export class MatchMaker {
         this.plannedPlayers = new Players(this.playerPool.getActivePlayers());
 
         //ignore exceptForTheseMatches if the players in them have become inactive
-        for (var i = 0; i < exceptForTheseMatches.length; i++) {
+        for (let i = 0; i < exceptForTheseMatches.length; i++) {
             if (
                 !this.plannedPlayers.contains(exceptForTheseMatches[i].player1Id) ||
                 !this.plannedPlayers.contains(exceptForTheseMatches[i].player2Id)

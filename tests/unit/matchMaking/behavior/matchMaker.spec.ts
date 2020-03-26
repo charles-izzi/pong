@@ -88,7 +88,9 @@ describe("E2E Match Maker Typical Session", () => {
     });
     testPoolAndPlannedPlayers(
         "players get updated properly after first match",
-        () => {},
+        () => {
+            //do nothing
+        },
         [player1, player2, player3, player4, player5, player6],
         [
             new Player(
@@ -145,7 +147,9 @@ describe("E2E Match Maker Typical Session", () => {
     });
     testPoolAndPlannedPlayers(
         "player get updated after adding players",
-        () => {},
+        () => {
+            //do nothing
+        },
         [
             player1,
             player2,
@@ -214,7 +218,9 @@ describe("E2E Match Maker Typical Session", () => {
     });
     testPoolAndPlannedPlayers(
         "players get updated after playing first match",
-        () => {},
+        () => {
+            //do nothing
+        },
         [
             player1,
             player2,
@@ -398,7 +404,9 @@ describe("E2E Match Maker Typical Session", () => {
     });
     testPoolAndPlannedPlayers(
         "players get updated after match recalculation from added player",
-        () => {},
+        () => {
+            //do nothing
+        },
         [
             player1,
             player2,

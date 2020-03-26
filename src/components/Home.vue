@@ -64,8 +64,8 @@ import { selectedColor } from "@/constants";
 })
 export default class Home extends Vue {
   selectedColor: string = selectedColor;
-  scrollTop: number = 0;
-  stickyWidth: number = 0;
+  scrollTop = 0;
+  stickyWidth = 0;
   selectPlayer(id: string) {
     this.$repo.dispatch.players.selectPlayer(id);
   }

@@ -24,13 +24,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="gray darken-1" text @click="close()">Close</v-btn>
-                <v-btn
-                    class="ps-3"
-                    color="primary darken-1"
-                    text
-                    @click="saveAndClose()"
-                    >Add</v-btn
-                >
+                <v-btn class="ps-3" color="primary darken-1" text @click="saveAndClose()">Add</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -38,11 +32,10 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { IPlayer } from "@/store/players";
 
 @Component({})
 export default class AddPlayer extends Vue {
-    valid: boolean = true;
+    valid = true;
     nameRules = [
         (v: string) => {
             return !!v || "Name is required";
@@ -51,8 +44,8 @@ export default class AddPlayer extends Vue {
             return (
                 !v ||
                 v.length < 1 ||
-                v.length > 2 ||
-                "Name needs at least 3 characters"
+                v.length > 1 ||
+                "Name needs at least 2 characters"
             );
         },
         (v: string) => {
@@ -63,16 +56,19 @@ export default class AddPlayer extends Vue {
             );
         },
     ];
-    name: string = "";
+    name = "";
     close() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (this.$refs.addForm as any).reset();
         this.$repo.commit.setShowAddDialog(false);
     }
     async saveAndClose() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((this.$refs.addForm as any).validate()) {
             this.$repo.commit.setShowAddDialog(false);
             await this.$repo.dispatch.addNewUser(this.name);
             this.$repo.dispatch.players.fetchPlayers();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (this.$refs.addForm as any).reset();
         }
     }

@@ -21,7 +21,7 @@ export class PotentialMatches {
 
     copy(): PotentialMatches {
         const copy = new PotentialMatches(this.oddPlayer ? new Player(this.oddPlayer.id, this.oddPlayer.gamesPlayed, this.oddPlayer.playersPlayed, this.oddPlayer.isActive) : null);
-        for (var i = 0; i < this.matches.length; i++) {
+        for (let i = 0; i < this.matches.length; i++) {
             copy.add(this.matches[i])
         }
         return copy;

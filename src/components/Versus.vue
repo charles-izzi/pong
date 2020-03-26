@@ -16,16 +16,10 @@
             <span class="px-2 my-auto">vs</span>
             <v-col>
                 <div v-if="readonly">
-                    <versus-player
-                        :playerId="match.player2Id"
-                        :alignRight="true"
-                    ></versus-player>
+                    <versus-player :playerId="match.player2Id" :alignRight="true"></versus-player>
                 </div>
                 <v-card @click="playMatch(match.player2Id)" v-else>
-                    <versus-player
-                        :playerId="match.player2Id"
-                        :alignRight="true"
-                    ></versus-player>
+                    <versus-player :playerId="match.player2Id" :alignRight="true"></versus-player>
                 </v-card>
             </v-col>
         </v-row>
@@ -34,7 +28,6 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { IPlayDialog } from "@/store/play";
 import { selectedColor } from "@/constants";
 import VersusPlayer from "./VersusPlayer.vue";
 import { Match } from "@/business/matchMaking/match";

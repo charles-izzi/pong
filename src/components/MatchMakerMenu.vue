@@ -96,7 +96,7 @@ import { MatchMaker } from "@/business/matchMaking/matchMaker";
 })
 export default class MatchMakerMenu extends Vue {
     show!: boolean;
-    showConfirmation: boolean = false;
+    showConfirmation = false;
 
     goToMatchMaker() {
         this.$router.push(matchMakerRoute);

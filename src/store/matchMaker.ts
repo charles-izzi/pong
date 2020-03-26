@@ -1,7 +1,7 @@
 import { MatchMaker } from "@/business/matchMaking/matchMaker";
 import { Match } from "@/business/matchMaking/match";
 import { defineModule } from "direct-vuex";
-import { moduleGetterContext, moduleActionContext } from ".";
+import { moduleActionContext } from ".";
 
 export interface MatchMakerModuleState {
     matchMaker: MatchMaker;
@@ -55,7 +55,5 @@ export const matchMakerModule = defineModule({
 });
 
 //direct-vuex - used for typing on vuex getters, mutations and actions
-const matchMakerGetterContext = (args: [any, any, any, any]) =>
-    moduleGetterContext(args, matchMakerModule);
 const matchMakerActionContext = (context: any) =>
     moduleActionContext(context, matchMakerModule);

@@ -1,4 +1,4 @@
-import { $http, moduleGetterContext, moduleActionContext } from ".";
+import { $http, moduleActionContext } from ".";
 import { defineModule } from "direct-vuex";
 
 export interface MatchHistoryModuleState {
@@ -48,12 +48,12 @@ export const matchHistoryModule = defineModule({
                         ((state.matchesFilter.playerName ===
                             match.player1Name ||
                             state.matchesFilter.playerName ===
-                                match.player2Name) &&
+                            match.player2Name) &&
                             (!state.matchesFilter.opponentName ||
                                 state.matchesFilter.opponentName ===
-                                    match.player1Name ||
+                                match.player1Name ||
                                 state.matchesFilter.opponentName ===
-                                    match.player2Name))
+                                match.player2Name))
                     );
                 })
                 .sort((a: string, b: string) => {
@@ -107,11 +107,11 @@ export const matchHistoryModule = defineModule({
             );
             if (!player1Id || !player2Id) return;
 
-            let player1 = rootGetters.players.player(player1Id);
+            const player1 = rootGetters.players.player(player1Id);
             player1.elo += match.player1Wins
                 ? match.eloChange * -1
                 : match.eloChange;
-            let player2 = rootGetters.players.player(player2Id);
+            const player2 = rootGetters.players.player(player2Id);
             player2.elo += match.player1Wins
                 ? match.eloChange
                 : match.eloChange * -1;
@@ -125,7 +125,5 @@ export const matchHistoryModule = defineModule({
 });
 
 //direct-vuex - used for typing on vuex getters, mutations and actions
-const matchHistoryGetterContext = (args: [any, any, any, any]) =>
-    moduleGetterContext(args, matchHistoryModule);
 const matchHistoryActionContext = (context: any) =>
     moduleActionContext(context, matchHistoryModule);

@@ -1,10 +1,6 @@
 <template>
     <div>
-        <v-dialog
-            v-model="$repo.state.play.play.showDialog"
-            :scrollable="false"
-            max-width="500px"
-        >
+        <v-dialog v-model="$repo.state.play.play.showDialog" :scrollable="false" max-width="500px">
             <v-card>
                 <v-card-title>
                     <span>Select Winner</span>
@@ -25,16 +21,14 @@
                         color="gray darken-1"
                         text
                         @click="$repo.commit.play.setShowPlayDialog(false)"
-                        >Close</v-btn
-                    >
+                    >Close</v-btn>
                     <v-btn
                         class="ps-3"
                         color="green darken-1"
                         text
                         :disabled="!$repo.state.play.play.winner"
                         @click="completeMatch()"
-                        >Confirm</v-btn
-                    >
+                    >Confirm</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -62,7 +56,7 @@
                             >
                                 <td>
                                     {{
-                                        $repo.getters.players.player(id).player
+                                    $repo.getters.players.player(id).player
                                     }}
                                 </td>
                                 <td
@@ -80,63 +74,54 @@
                                                 id
                                             )
                                         "
-                                        >+</span
-                                    >
+                                    >+</span>
                                     <span
                                         v-show="
                                             !$repo.getters.play.isPlayerWinner(
                                                 id
                                             )
                                         "
-                                        // eslint-disable-next-line prettier/prettier
-                                        >-</span>
+                                    >-</span>
                                     {{ eloChange }}
                                 </td>
-                                <td>
-                                    {{ $repo.getters.players.player(id).elo }}
-                                </td>
+                                <td>{{ $repo.getters.players.player(id).elo }}</td>
                             </tr>
                         </tbody>
                     </template>
                 </v-simple-table>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text color="default" @click="showResults = false"
-                        >OK</v-btn
-                    >
+                    <v-btn text color="default" @click="showResults = false">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
-    import { mapState } from "vuex";
-    import Component from "vue-class-component";
-    import Notification from "./Notification.vue";
-    import Players from "./Players.vue";
-    import { IPlayer } from "@/store/players";
-    import { IPlayDialog } from "@/store/play";
-    import { winnerColor } from "@/constants";
+import Vue from "vue";
+import Component from "vue-class-component";
+import Notification from "./Notification.vue";
+import Players from "./Players.vue";
+import { winnerColor } from "@/constants";
 
-    @Component({
-        components: {
-            notification: Notification,
-            players: Players,
-        },
-    })
-    export default class Play extends Vue {
-        winnerColor: string = winnerColor;
+@Component({
+    components: {
+        notification: Notification,
+        players: Players,
+    },
+})
+export default class Play extends Vue {
+    winnerColor: string = winnerColor;
 
-        showResults: boolean = false;
-        eloChange = 0;
+    showResults = false;
+    eloChange = 0;
 
-        async completeMatch() {
-            this.eloChange = await this.$repo.dispatch.play.completeMatch();
-            this.showResults = true;
-        }
-        selectWinner(id: string) {
-            this.$repo.commit.play.setWinner(id);
-        }
+    async completeMatch() {
+        this.eloChange = await this.$repo.dispatch.play.completeMatch();
+        this.showResults = true;
     }
+    selectWinner(id: string) {
+        this.$repo.commit.play.setWinner(id);
+    }
+}
 </script>

@@ -5,12 +5,12 @@ import { IMatch } from './match';
 export class Players {
     players: Player[] = [];
     private playerDictionary: { [id: string]: Player } = {};
-    private currentRound: number = 0;
+    private currentRound = 0;
     constructor();
     constructor(players: Player[]);
     constructor(players?: Player[]) {
         if (!players) return;
-        for (var i = 0; i < players.length; i++) {
+        for (let i = 0; i < players.length; i++) {
             this.add(new Player(players[i].id, players[i].gamesPlayed, players[i].playersPlayed, players[i].isActive));
         }
         this.currentRound = this.getCurrentRound();
@@ -28,9 +28,9 @@ export class Players {
     }
 
     updatePlayers(matches: IMatch[]) {
-        for (var i = 0; i < matches.length; i++) {
-            let player1 = this.playerDictionary[matches[i].player1Id];
-            let player2 = this.playerDictionary[matches[i].player2Id];
+        for (let i = 0; i < matches.length; i++) {
+            const player1 = this.playerDictionary[matches[i].player1Id];
+            const player2 = this.playerDictionary[matches[i].player2Id];
             player1.gamesPlayed++;
             player2.gamesPlayed++;
 
@@ -56,7 +56,7 @@ export class Players {
 
         //activate existing players and add new players
         newPlayers.forEach((id: string) => {
-            if (this.playerDictionary.hasOwnProperty(id)) {
+            if (Object.prototype.hasOwnProperty.call(this.playerDictionary, id)) {
                 this.activate(this.playerDictionary[id]);
             } else {
                 this.add(new Player(id));
@@ -65,8 +65,8 @@ export class Players {
     }
 
     getMemoKey(playerData: IPlayerData) {
-        let keyArr = [];
-        for (var i = 0; i < this.players.length; i++) {
+        const keyArr = [];
+        for (let i = 0; i < this.players.length; i++) {
             keyArr.push(playerData[this.players[i].id].player);
         }
         return keyArr.join("");
@@ -74,11 +74,11 @@ export class Players {
 
     removeAt(i: number) {
         delete this.playerDictionary[this.players[i].id];
-        this.players.splice(i, 1);        
+        this.players.splice(i, 1);
     }
 
     contains(id: string) {
-        return this.playerDictionary.hasOwnProperty(id);
+        return Object.prototype.hasOwnProperty.call(this.playerDictionary, id);
     }
 
     private activate(player: Player) {
