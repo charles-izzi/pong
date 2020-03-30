@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "pong-78c15"
+  },
+  "targets": {
+    "pong-78c15": {
+      "hosting": {
+        "pong-test": [
+          "pong-test-78c15"
+        ],
+        "pong": [
+          "pong-78c15"
+        ]
+      }
+    }
+  }
+}

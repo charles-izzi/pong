@@ -6,6 +6,7 @@ import vuetify from "./plugins/vuetify";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import Play from "./components/Play.vue";
+import './registerServiceWorker'
 
 Vue.component("play", Play);
 Vue.use(VueAxios, axios);
