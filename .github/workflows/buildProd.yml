@@ -27,3 +27,8 @@ jobs:
     - run: npm run test:unit
       env:
         CI: true
+    - name: Archive Production Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: dist
+        path: dist

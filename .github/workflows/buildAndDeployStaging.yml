@@ -1,5 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# Then it will deploy the artifacts from the build to firebase project perscribed in firebase.json
+# For more information see: https://github.com/w9jds/firebase-action
 
 on:
   push:
@@ -27,7 +29,7 @@ jobs:
     - run: npm run test:unit
       env:
         CI: true
-    - name: Archive Production Artifact
+    - name: Archive Staging Artifact
       uses: actions/upload-artifact@master
       with:
         name: dist
@@ -39,11 +41,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
-      - name: Download Artifact
+      - name: Download Staging Artifact
         uses: actions/download-artifact@master
         with:
           name: dist
-      - name: Deploy to Firebase
+      - name: Deploy to Firebase pong-test Site
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting:pong-test
