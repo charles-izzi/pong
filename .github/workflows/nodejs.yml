@@ -48,4 +48,4 @@ jobs:
         with:
           args: deploy --only hosting:pong-test
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_TOKEN: 1//0dIC241leb9v9CgYIARAAGA0SNwF-L9Irq4HqDGlmNXQMqr2Fav7s4zkwAH4_WsQOrM_z7rCQtBHoXl-gjeWD6_TONEo583ZQp4E
