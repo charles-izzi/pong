@@ -49,15 +49,15 @@ export default class Player extends Vue {
         0px 2px 2px 0px rgba(0, 0, 0, 0.07), 0px 1px 5px 0px rgba(0, 0, 0, 0.06);
 }
 .v-card__text {
-    padding: 10px 16px;
+    padding: 10px 10px;
 }
 p {
     margin-bottom: 0 !important;
 }
 .rank-col {
-    width: 8%;
+    width: 10%;
 }
 .rank-col-dense {
-    width: 6%;
+    width: 8%;
 }
 </style>

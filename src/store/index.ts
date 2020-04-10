@@ -6,8 +6,8 @@ import { playersModule } from "./players";
 import { matchHistoryModule } from "./matchHistory";
 import { playModule } from "./play";
 import { matchMakerModule } from "./matchMaker";
-import { IPlayerUpdate } from "@/store/players";
-import { IMatch } from "@/store/matchHistory";
+import Player from "@/business/data/player";
+import { IRecordedMatch } from '@/business/data/recordedMatch';
 
 Vue.use(Vuex);
 export const $http = $axios.create({
@@ -17,6 +17,12 @@ export const $http = $axios.create({
 
 export interface GlobalModuleState {
     showAddDialog: boolean;
+}
+
+export interface IPlayerUpdate {
+    player: string;
+    elo: number;
+    hidden: boolean;
 }
 
 const {
@@ -44,32 +50,24 @@ const {
         },
     },
     actions: {
-        postMatch: async (context, payload: IMatch) => {
-            await $http.post("matchHistory.json", {
-                ...payload,
-                timestamp: new Date(),
+        postMatch: (context, payload: IRecordedMatch) => {
+            return $http.post("matchHistory.json", {
+                ...payload
             });
         },
-        postUser: async (context, payload: IPlayerUpdate) => {
-            return await $http.post(`user.json`, {
+        postUser: (context, payload: IPlayerUpdate) => {
+            return $http.post(`user.json`, {
                 player: payload.player,
                 elo: payload.elo,
                 hidden: payload.hidden,
             });
         },
-        putUser: async (context, payload: IPlayerUpdate) => {
-            await $http.put(`user/${payload.id}.json`, {
+        putUser: (context, payload: Player) => {
+            return $http.put(`user/${payload.id}.json`, {
                 player: payload.player,
                 elo: payload.elo,
                 hidden: payload.hidden,
             });
-        },
-        addNewUser: ({ dispatch }, val: string) => {
-            return dispatch("postUser", {
-                player: val,
-                elo: 1200,
-                hidden: false,
-            } as IPlayerUpdate);
         },
     },
 });

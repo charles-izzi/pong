@@ -97,13 +97,5 @@ export default class MatchMaker extends Vue {
         );
         this.overlay = false;
     }
-    async mounted() {
-        await this.$repo.dispatch.matchMaker.loadMatchMaker();
-        this.$repo.state.matchMaker.matchMaker.setPlayers(
-            this.$repo.state.players.selectedPlayers,
-            this.$repo.state.matchMaker.activeMatches
-        );
-        this.$repo.dispatch.matchMaker.loadActiveMatches();
-    }
 }
 </script>

@@ -1,88 +1,62 @@
 import { $http, moduleActionContext } from ".";
 import { defineModule } from "direct-vuex";
+import RecordedMatches, { IRecordedMatches } from '@/business/data/recordedMatches';
+import RecordedMatch, { IRecordedMatch } from '@/business/data/recordedMatch';
+import Player from '@/business/data/player';
 
 export interface MatchHistoryModuleState {
-    matches: IMatches;
-    matchesFilter: IMatchesFilter;
-    showDeleteMatchDialog: boolean;
-    deleteMatchKey: string;
+    matches: RecordedMatches;
+    deleteDialog: IDeleteDialog;
 }
 
-export interface IMatches {
-    [key: string]: IMatch;
-}
-
-export interface IMatch {
-    player1Name: string;
-    player2Name: string;
-    player1Wins: boolean;
-    player1Elo: number;
-    player2Elo: number;
-    eloChange: number;
-    timestamp: Date;
-}
-
-export interface IMatchesFilter {
-    playerName: string;
-    opponentName?: string;
+export interface IDeleteDialog {
+    show: boolean;
+    match: RecordedMatch;
 }
 
 export const matchHistoryModule = defineModule({
     namespaced: true,
     state: (): MatchHistoryModuleState => {
         return {
-            matches: {} as IMatches,
-            matchesFilter: {} as IMatchesFilter,
-            showDeleteMatchDialog: false,
-            deleteMatchKey: "",
+            matches: new RecordedMatches(),
+            deleteDialog: {} as IDeleteDialog
         };
     },
     getters: {
-        match: state => (id: string) => state.matches[id],
-        filteredMatches: state =>
-            Object.keys(state.matches)
-                .filter((x: string) => {
-                    const match = state.matches[x];
-                    return (
-                        !state.matchesFilter.playerName ||
-                        ((state.matchesFilter.playerName ===
-                            match.player1Name ||
-                            state.matchesFilter.playerName ===
-                            match.player2Name) &&
-                            (!state.matchesFilter.opponentName ||
-                                state.matchesFilter.opponentName ===
-                                match.player1Name ||
-                                state.matchesFilter.opponentName ===
-                                match.player2Name))
-                    );
-                })
-                .sort((a: string, b: string) => {
-                    return state.matches[a].timestamp <
-                        state.matches[b].timestamp
-                        ? 1
-                        : -1;
-                }),
+        matchPlayer1: (state, getters, rootState) => (matchId: string) => {
+            return rootState.players.players.hash[state.matches.hash[matchId].player1] as Player;
+        },
+        matchPlayer2: (state, getters, rootState) => (matchId: string) => {
+            return rootState.players.players.hash[state.matches.hash[matchId].player2] as Player;
+        },
     },
     mutations: {
-        setMatches: (state, matches: IMatches) => {
+        setMatches: (state, matches: RecordedMatches) => {
             state.matches = matches;
         },
-        setMatchesFilter: (state, matchFilter: IMatchesFilter) => {
-            state.matchesFilter = matchFilter;
+        showDeleteDialog: (state, match: RecordedMatch) => {
+            state.deleteDialog = {
+                show: true,
+                match: match
+            }
         },
-        setShowDeleteMatchDialog: (state, val: boolean) => {
-            state.showDeleteMatchDialog = val;
-        },
-        setDeleteMatchKey: (state, val: string) => {
-            state.deleteMatchKey = val;
-        },
+        closeDeleteDialog: state => {
+            state.deleteDialog = {
+                show: false,
+                match: {} as RecordedMatch
+            }
+        }
     },
     actions: {
         fetchMatches: async context => {
-            const { commit } = matchHistoryActionContext(context);
-            commit.setMatches(
-                (await $http.get("/matchHistory.json")).data as IMatches
-            );
+            const { commit, rootState } = matchHistoryActionContext(context);
+            commit.setMatches(new RecordedMatches(rootState.players.players, (await $http.get("/matchHistory.json")).data as IRecordedMatches));
+        },
+        addMatch: async (context, match: IRecordedMatch) => {
+            const {
+                rootDispatch,
+            } = matchHistoryActionContext(context);
+            await rootDispatch.postMatch(match)
         },
         deleteMatch: async (context, matchKey: string) => {
             await $http.delete(`matchHistory/${matchKey}.json`);
@@ -92,34 +66,19 @@ export const matchHistoryModule = defineModule({
                 dispatch,
                 state,
                 commit,
-                getters,
-                rootGetters,
+                rootState,
                 rootDispatch,
             } = matchHistoryActionContext(context);
+
+            const match = state.matches.hash[matchKey];
+            const matchPlayers = match.undoMatch(rootState.players.players);
+
+            rootDispatch.players.updatePlayer(matchPlayers.player1);
+            rootDispatch.players.updatePlayer(matchPlayers.player2);
+
             dispatch.deleteMatch(matchKey);
-            const match = getters.match(matchKey);
-
-            const player1Id = rootGetters.players.playerByName(
-                match.player1Name
-            );
-            const player2Id = rootGetters.players.playerByName(
-                match.player2Name
-            );
-            if (!player1Id || !player2Id) return;
-
-            const player1 = rootGetters.players.player(player1Id);
-            player1.elo += match.player1Wins
-                ? match.eloChange * -1
-                : match.eloChange;
-            const player2 = rootGetters.players.player(player2Id);
-            player2.elo += match.player1Wins
-                ? match.eloChange
-                : match.eloChange * -1;
-
-            rootDispatch.putUser({ id: player1Id, ...player1 });
-            rootDispatch.putUser({ id: player2Id, ...player2 });
-            delete state.matches[matchKey];
-            commit.setMatches({ ...state.matches });
+            state.matches.removeMatch(match);
+            commit.setMatches(state.matches);
         },
     },
 });

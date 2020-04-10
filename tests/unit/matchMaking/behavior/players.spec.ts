@@ -1,6 +1,6 @@
 import { Player } from "@/business/matchMaking/player";
-import { playerData } from "./matchMaker.spec";
 import { Players } from "@/business/matchMaking/players";
+import { TestData } from '../../testData';
 
 const players = new Players();
 players.setPlayers(["1", "2", "3", "4", "5", "6"]);
@@ -99,7 +99,7 @@ describe("Match Maker Players Behavior", () => {
     );
 
     it("memokey formed properly", () => {
-        expect(players.getMemoKey(playerData)).toBe("abcdefg");
+        expect(players.getMemoKey(TestData.playerData)).toBe("abcdefg");
     });
 
     testPlayerState(

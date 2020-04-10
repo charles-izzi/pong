@@ -1,25 +1,12 @@
 import { $http, moduleActionContext } from ".";
 import { defineModule } from "direct-vuex";
+import Player from '@/business/data/player';
+import Players, { IPlayers } from '@/business/data/players';
 
 export interface PlayersModuleState {
-    players: IPlayers;
+    players: Players;
     rankedPlayers: string[];
     selectedPlayers: string[];
-}
-
-export interface IPlayer {
-    player: string;
-    elo: number;
-    rank: number;
-    hidden: boolean;
-}
-
-export interface IPlayers {
-    [key: string]: IPlayer;
-}
-
-export interface IPlayerUpdate extends IPlayer {
-    id: string;
 }
 
 export interface IDropdown {
@@ -31,54 +18,37 @@ export const playersModule = defineModule({
     namespaced: true,
     state: (): PlayersModuleState => {
         return {
-            players: {} as IPlayers,
-            rankedPlayers: [] as string[],
-            selectedPlayers: [] as string[],
+            players: new Players(),
+            rankedPlayers: [],
+            selectedPlayers: [],
         };
     },
     getters: {
-        players: state => state.players,
-        rankedPlayers: state => state.rankedPlayers,
-        noPlayersSelected: state => state.selectedPlayers.length === 0,
         onePlayerSelected: state => state.selectedPlayers.length === 1,
         twoPlayersSelected: state => state.selectedPlayers.length === 2,
         moreThanTwoPlayersSelected: state => state.selectedPlayers.length > 2,
         manyPlayersSelected: state => state.selectedPlayers.length > 2,
         isPlayerSelected: state => (id: string) =>
             state.selectedPlayers.includes(id),
-        player: state => (id: string) => state.players[id],
+        player: state => (id: string) => state.players.hash[id],
         playerByName: state => (name: string) =>
-            Object.keys(state.players || {}).find(
+            Object.keys(state.players.hash || {}).find(
                 x =>
-                    state.players[x].player.toLowerCase() === name.toLowerCase()
+                    state.players.hash[x].player.toLowerCase() === name.toLowerCase()
             ),
-        dropdownPlayersList: state =>
-            Object.keys(state.players).map(k => state.players[k].player),
     },
     mutations: {
-        setPlayer: (state, player: IPlayerUpdate) => {
-            state.players[player.id] = {
-                player: player.player,
-                elo: player.elo,
-                hidden: player.hidden,
-            } as IPlayer;
-        },
-        setPlayers: (state, players: IPlayers) => {
-            state.players = players;
-        },
-        rankPlayers: state => {
-            state.rankedPlayers = Object.keys(state.players).sort(
+        commitPlayers: (state) => {
+            state.rankedPlayers = Object.keys(state.players.hash).sort(
                 (a: string, b: string) => {
-                    return state.players[a].elo < state.players[b].elo ? 1 : -1;
+                    return state.players.hash[a].elo < state.players.hash[b].elo ? 1 : -1;
                 }
             );
             state.rankedPlayers.forEach(
                 (x: string, index: number) =>
-                    (state.players[x].rank = index + 1)
+                    (state.players.hash[x].rank = index + 1)
             );
-        },
-        removeFirstSelection: state => {
-            state.selectedPlayers.splice(0, 1);
+            state.players = new Players(state.players.hash);
         },
         removeSelectedPlayer: (state, id: string) => {
             state.selectedPlayers.splice(state.selectedPlayers.indexOf(id), 1);
@@ -91,27 +61,30 @@ export const playersModule = defineModule({
         },
     },
     actions: {
-        getPlayers: async context => {
-            const { dispatch } = playersActionContext(context);
-            if (!Object.keys(context.state.players).length)
-                await dispatch.fetchPlayers();
-            return context.state.players as IPlayers;
-        },
-        setPlayer: (context, player: IPlayerUpdate) => {
-            const { commit } = playersActionContext(context);
-            commit.setPlayer(player);
-            commit.rankPlayers();
-        },
-        setPlayers: (context, players: IPlayers) => {
-            const { commit } = playersActionContext(context);
-            commit.setPlayers(players);
-            commit.rankPlayers();
-        },
         fetchPlayers: async context => {
-            const { dispatch } = playersActionContext(context);
-            dispatch.setPlayers(
-                (await $http.get("/user.json")).data as IPlayers
-            );
+            const { state, commit } = playersActionContext(context);
+            state.players = new Players((await $http.get("/user.json")).data as IPlayers);
+            commit.commitPlayers();
+        },
+        loadPlayers: async ({ state, dispatch }) => {
+            if (!state.players.list.length) return dispatch("fetchPlayers");
+        },
+        updatePlayer: (context, player: Player) => {
+            const { commit, rootDispatch } = playersActionContext(context);
+            rootDispatch.putUser(player);
+            commit.commitPlayers();
+        },
+        addPlayer: async (context, val: string) => {
+            const { state, commit, rootDispatch } = playersActionContext(context);
+
+            const newPlayerUpdate = {
+                player: val,
+                elo: 1200,
+                hidden: false,
+            };
+            const newPlayerId = (await rootDispatch.postUser(newPlayerUpdate)).data.name;
+            state.players.addPlayer(new Player({ id: newPlayerId, rank: -1, ...newPlayerUpdate }));
+            commit.commitPlayers();
         },
         selectPlayer: (context, id) => {
             const { getters, commit } = playersActionContext(context);

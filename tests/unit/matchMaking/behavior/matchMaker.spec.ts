@@ -1,66 +1,8 @@
 import { MatchMaker } from "@/business/matchMaking/matchMaker";
-import { IPlayers } from "@/store/players";
 import { Player } from "@/business/matchMaking/player";
-import { Match } from "@/business/matchMaking/match";
+import { TestData } from '../../testData';
 
-export const playerData: IPlayers = {
-    "1": {
-        player: "a",
-        elo: 1350,
-        rank: 1,
-        hidden: false,
-    },
-    "2": {
-        player: "b",
-        elo: 1300,
-        rank: 1,
-        hidden: false,
-    },
-    "3": {
-        player: "c",
-        elo: 1250,
-        rank: 1,
-        hidden: false,
-    },
-    "4": {
-        player: "d",
-        elo: 1200,
-        rank: 1,
-        hidden: false,
-    },
-    "5": {
-        player: "e",
-        elo: 1150,
-        rank: 1,
-        hidden: false,
-    },
-    "6": {
-        player: "f",
-        elo: 1100,
-        rank: 1,
-        hidden: false,
-    },
-    "7": {
-        player: "g",
-        elo: 1050,
-        rank: 1,
-        hidden: false,
-    },
-    "8": {
-        player: "h",
-        elo: 1000,
-        rank: 1,
-        hidden: false,
-    },
-    "9": {
-        player: "i",
-        elo: 950,
-        rank: 1,
-        hidden: false,
-    },
-};
-
-let matchMaker = new MatchMaker(playerData, 6);
+let matchMaker = new MatchMaker(TestData.playerData, 6);
 matchMaker.setPlayers(["1", "2", "3", "4", "5", "6"], []);
 
 const player1 = new Player("1");
@@ -75,15 +17,15 @@ const player9 = new Player("9");
 
 describe("E2E Match Maker Typical Session", () => {
     it("getMatches gets the equal play, distinct, and least rating differential matches", () => {
-        matchMaker = new MatchMaker(playerData, 6);
+        matchMaker = new MatchMaker(TestData.playerData, 6);
         matchMaker.setPlayers(["1", "2", "3", "4", "5", "6"], []);
         expect(matchMaker.getMatches()).toEqual([
-            match("5", "6", 0, 50),
-            match("3", "4", 0, 50),
-            match("1", "2", 0, 50),
-            match("4", "6", 2, 100),
-            match("2", "5", 2, 150),
-            match("1", "3", 2, 100),
+            TestData.plannedMatch("5", "6", 0, 50),
+            TestData.plannedMatch("3", "4", 0, 50),
+            TestData.plannedMatch("1", "2", 0, 50),
+            TestData.plannedMatch("4", "6", 2, 100),
+            TestData.plannedMatch("2", "5", 2, 150),
+            TestData.plannedMatch("1", "3", 2, 100),
         ]);
     });
     testPoolAndPlannedPlayers(
@@ -134,15 +76,15 @@ describe("E2E Match Maker Typical Session", () => {
     it("all but the passed-in matches get recalculated based on new player pool", () => {
         matchMaker.setPlayers(
             ["1", "2", "3", "4", "5", "6", "7", "8"],
-            [match("5", "6", 0, 50), match("3", "4", 0, 50)]
+            [TestData.plannedMatch("5", "6", 0, 50), TestData.plannedMatch("3", "4", 0, 50)]
         );
         expect(matchMaker.getMatches()).toEqual([
-            match("7", "8", 0, 50),
-            match("5", "6", 0, 50),
-            match("3", "4", 0, 50),
-            match("1", "2", 0, 50),
-            match("6", "8", 2, 100),
-            match("5", "7", 2, 100),
+            TestData.plannedMatch("7", "8", 0, 50),
+            TestData.plannedMatch("5", "6", 0, 50),
+            TestData.plannedMatch("3", "4", 0, 50),
+            TestData.plannedMatch("1", "2", 0, 50),
+            TestData.plannedMatch("6", "8", 2, 100),
+            TestData.plannedMatch("5", "7", 2, 100),
         ]);
     });
     testPoolAndPlannedPlayers(
@@ -380,26 +322,26 @@ describe("E2E Match Maker Typical Session", () => {
     );
     it("get matches still follows rules after playing matches", () => {
         expect(matchMaker.getMatches()).toEqual([
-            match("3", "4", 0, 50),
-            match("1", "2", 0, 50),
-            match("6", "8", 2, 100),
-            match("5", "7", 2, 100),
-            match("2", "4", 2, 100),
-            match("1", "3", 2, 100),
+            TestData.plannedMatch("3", "4", 0, 50),
+            TestData.plannedMatch("1", "2", 0, 50),
+            TestData.plannedMatch("6", "8", 2, 100),
+            TestData.plannedMatch("5", "7", 2, 100),
+            TestData.plannedMatch("2", "4", 2, 100),
+            TestData.plannedMatch("1", "3", 2, 100),
         ]);
     });
     it("odd players match to the minimum rating differential player", () => {
         matchMaker.setPlayers(
             ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-            [match("3", "4", 0, 50), match("1", "2", 0, 50)]
+            [TestData.plannedMatch("3", "4", 0, 50), TestData.plannedMatch("1", "2", 0, 50)]
         );
         expect(matchMaker.getMatches()).toEqual([
-            match("3", "4", 0, 50),
-            match("1", "2", 0, 50),
-            match("9", "8", 1, 50),
-            match("6", "9", 2, 150),
-            match("5", "7", 2, 100),
-            match("2", "4", 2, 100),
+            TestData.plannedMatch("3", "4", 0, 50),
+            TestData.plannedMatch("1", "2", 0, 50),
+            TestData.plannedMatch("9", "8", 1, 50),
+            TestData.plannedMatch("6", "9", 2, 150),
+            TestData.plannedMatch("5", "7", 2, 100),
+            TestData.plannedMatch("2", "4", 2, 100),
         ]);
     });
     testPoolAndPlannedPlayers(
@@ -511,18 +453,4 @@ function testPoolAndPlannedPlayers(
     it(`${name} - planned players`, () => {
         expect(matchMaker.plannedPlayers.players).toEqual(planned);
     });
-}
-
-function match(
-    id1: string,
-    id2: string,
-    priority: number,
-    ratingDifferential: number
-) {
-    const match = new Match(playerData);
-    match.player1Id = id1;
-    match.player2Id = id2;
-    match.priority = priority;
-    match.ratingDifferential = ratingDifferential;
-    return match;
 }

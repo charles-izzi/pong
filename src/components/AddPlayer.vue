@@ -66,8 +66,7 @@ export default class AddPlayer extends Vue {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((this.$refs.addForm as any).validate()) {
             this.$repo.commit.setShowAddDialog(false);
-            await this.$repo.dispatch.addNewUser(this.name);
-            this.$repo.dispatch.players.fetchPlayers();
+            await this.$repo.dispatch.players.addPlayer(this.name);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (this.$refs.addForm as any).reset();
         }

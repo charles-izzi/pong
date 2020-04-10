@@ -89,6 +89,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { matchHistoryRoute, homeRoute, matchMakerRoute } from "@/router";
 import MatchMakerMenu from "./MatchMakerMenu.vue";
+import Match from "@/business/play/match";
 @Component({
     props: {
         overlay: Boolean,
@@ -104,19 +105,19 @@ export default class Action extends Vue {
     showMatchMakerMenu = false;
     playMatch() {
         this.$repo.commit.play.setPlay({
-            player1: this.$repo.state.players.selectedPlayers[0],
-            player2: this.$repo.state.players.selectedPlayers[1],
-            winner: "",
+            match: new Match(
+                this.$repo.state.players.players.hash[
+                    this.$repo.state.players.selectedPlayers[0]
+                ],
+                this.$repo.state.players.players.hash[
+                    this.$repo.state.players.selectedPlayers[1]
+                ]
+            ),
             showDialog: true,
             callback: () => this.$repo.commit.players.resetSelection(),
         });
     }
     goToMatchHistory() {
-        this.$repo.commit.matchHistory.setMatchesFilter({
-            playerName: this.$repo.getters.players.player(
-                this.$repo.state.players.selectedPlayers[0]
-            ).player,
-        });
         this.$router.push(matchHistoryRoute);
     }
     goToHome() {

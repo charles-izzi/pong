@@ -30,7 +30,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { selectedColor } from "@/constants";
 import VersusPlayer from "./VersusPlayer.vue";
-import { Match } from "@/business/matchMaking/match";
+import { Match as PlannedMatch } from "@/business/matchMaking/match";
+import Match from "@/business/play/match";
 
 @Component({
     components: {
@@ -45,15 +46,15 @@ import { Match } from "@/business/matchMaking/match";
     },
 })
 export default class Versus extends Vue {
-    match!: Match;
+    match!: PlannedMatch;
     readonly!: boolean;
     elevate!: boolean;
     selectedColor: string = selectedColor;
     get player1() {
-        return this.$repo.getters.players.player(this.match.player1Id);
+        return this.$repo.state.players.players.hash[this.match.player1Id];
     }
     get player2() {
-        return this.$repo.getters.players.player(this.match.player2Id);
+        return this.$repo.state.players.players.hash[this.match.player2Id];
     }
     get elevationStyle() {
         if (!this.elevate) return null;
@@ -62,9 +63,11 @@ export default class Versus extends Vue {
     playMatch(winnerId: string) {
         if (this.readonly) return;
         this.$repo.commit.play.setPlay({
-            player1: this.match.player1Id,
-            player2: this.match.player2Id,
-            winner: winnerId,
+            match: new Match(
+                this.$repo.state.players.players.hash[this.match.player1Id],
+                this.$repo.state.players.players.hash[this.match.player2Id],
+                winnerId
+            ),
             showDialog: true,
             callback: this.onMatchComplete,
         });

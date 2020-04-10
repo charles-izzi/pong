@@ -7,12 +7,9 @@
                 </v-card-title>
                 <players
                     dense
-                    :players="[
-                        $repo.state.play.play.player1,
-                        $repo.state.play.play.player2,
-                    ]"
+                    :players="playerIds"
                     :setSelected="selectWinner"
-                    :getSelected="this.$repo.getters.play.isPlayerWinner"
+                    :getSelected="isWinnerSelected"
                     :selectColor="winnerColor"
                 ></players>
                 <v-card-actions>
@@ -26,7 +23,7 @@
                         class="ps-3"
                         color="green darken-1"
                         text
-                        :disabled="!$repo.state.play.play.winner"
+                        :disabled="!winnerPopulated"
                         @click="completeMatch()"
                     >Confirm</v-btn>
                 </v-card-actions>
@@ -47,44 +44,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                v-for="id in [
-                                    $repo.state.play.play.player1,
-                                    $repo.state.play.play.player2,
-                                ]"
-                                :key="id"
-                            >
-                                <td>
-                                    {{
-                                    $repo.getters.players.player(id).player
-                                    }}
-                                </td>
+                            <tr v-for="player in players" :key="player.id">
+                                <td>{{ player.player }}</td>
                                 <td
-                                    :style="{
-                                        color: !$repo.getters.play.isPlayerWinner(
-                                            id
-                                        )
-                                            ? 'red'
-                                            : 'green',
-                                    }"
+                                    :style="{ color: !$repo.getters.play.isPlayerWinner(player.id) ? 'red' : 'green' }"
                                 >
-                                    <span
-                                        v-show="
-                                            $repo.getters.play.isPlayerWinner(
-                                                id
-                                            )
-                                        "
-                                    >+</span>
-                                    <span
-                                        v-show="
-                                            !$repo.getters.play.isPlayerWinner(
-                                                id
-                                            )
-                                        "
-                                    >-</span>
-                                    {{ eloChange }}
+                                    <span v-show="$repo.getters.play.isPlayerWinner(player.id)">+</span>
+                                    <span v-show="!$repo.getters.play.isPlayerWinner(player.id)">-</span>
+                                    {{ $repo.state.play.play.match.eloChange }}
                                 </td>
-                                <td>{{ $repo.getters.players.player(id).elo }}</td>
+                                <td>{{ player.elo }}</td>
                             </tr>
                         </tbody>
                     </template>
@@ -116,9 +85,30 @@ export default class Play extends Vue {
     showResults = false;
     eloChange = 0;
 
+    get playerIds() {
+        return [
+            this.$repo.state.play.play.match?.player1?.id,
+            this.$repo.state.play.play.match?.player2?.id,
+        ];
+    }
+
+    get players() {
+        return [
+            this.$repo.state.play.play.match?.player1,
+            this.$repo.state.play.play.match?.player2,
+        ];
+    }
+
+    get winnerPopulated() {
+        return this.$repo.state.play.play.match?.winnerId;
+    }
+
     async completeMatch() {
-        this.eloChange = await this.$repo.dispatch.play.completeMatch();
+        await this.$repo.dispatch.play.completeMatch();
         this.showResults = true;
+    }
+    isWinnerSelected(id: string) {
+        return this.$repo.state.play.play.match.isPlayerWinner(id);
     }
     selectWinner(id: string) {
         this.$repo.commit.play.setWinner(id);

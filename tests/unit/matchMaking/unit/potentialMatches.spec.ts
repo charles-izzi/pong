@@ -1,7 +1,7 @@
 import { PotentialMatches } from "@/business/matchMaking/potentialMatches";
 import { Player } from "@/business/matchMaking/player";
 import { Match } from "@/business/matchMaking/match";
-import { playerData } from "../behavior/matchMaker.spec";
+import { TestData } from '../../testData';
 
 describe("Match Maker Potential Matches", () => {
     it("potential matches constructed without odd player", () => {
@@ -21,7 +21,7 @@ describe("Match Maker Potential Matches", () => {
     });
     it("add match adds a copy of match", () => {
         const potentialMatches = new PotentialMatches(null);
-        const match = new Match(playerData, new Player("1"), new Player("2"));
+        const match = new Match(TestData.playerData, new Player("1"), new Player("2"));
         potentialMatches.add(match);
         expect(potentialMatches.matches).toEqual([match]);
         expect(potentialMatches.matches[0]).not.toBe(match);
@@ -31,7 +31,7 @@ describe("Match Maker Potential Matches", () => {
         const player2 = new Player("2");
         const player3 = new Player("3");
         const potentialMatches = new PotentialMatches(player3);
-        const match = new Match(playerData, player1, player2);
+        const match = new Match(TestData.playerData, player1, player2);
         potentialMatches.add(match);
         const copy = potentialMatches.copy();
         expect(copy).toEqual(potentialMatches);

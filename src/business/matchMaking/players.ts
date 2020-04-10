@@ -1,4 +1,4 @@
-import { IPlayers as IPlayerData } from '@/store/players';
+import PlayerData from '@/business/data/players';
 import { Player } from './player';
 import { IMatch } from './match';
 
@@ -64,10 +64,10 @@ export class Players {
         });
     }
 
-    getMemoKey(playerData: IPlayerData) {
+    getMemoKey(playerData: PlayerData) {
         const keyArr = [];
         for (let i = 0; i < this.players.length; i++) {
-            keyArr.push(playerData[this.players[i].id].player);
+            keyArr.push(playerData.hash[this.players[i].id].player);
         }
         return keyArr.join("");
     }

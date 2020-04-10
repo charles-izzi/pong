@@ -1,8 +1,6 @@
-import elo from "@/business/elo";
 import { defineModule } from "direct-vuex";
 import { moduleActionContext } from ".";
-import { IPlayer } from "./players";
-import { IMatch } from "./matchHistory";
+import Match from '@/business/play/match';
 
 export interface PlayModuleState {
     play: IPlayDialog;
@@ -15,9 +13,7 @@ export interface IPlay {
 }
 
 export interface IPlayDialog {
-    player1: string;
-    player2: string;
-    winner: string;
+    match: Match;
     showDialog?: boolean;
     callback?: () => void;
 }
@@ -30,11 +26,11 @@ export const playModule = defineModule({
         };
     },
     getters: {
-        isPlayerWinner: state => (id: string) => state.play.winner === id,
+        isPlayerWinner: state => (id: string) => state.play.match.winnerId === id,
     },
     mutations: {
         setWinner: (state, winner: string) => {
-            state.play.winner = winner;
+            state.play.match.winnerId = winner;
         },
         setShowPlayDialog: (state, val: boolean) => {
             state.play.showDialog = val;
@@ -44,48 +40,21 @@ export const playModule = defineModule({
         },
     },
     actions: {
-        play: async (context, match: IPlayDialog) => {
-            const { rootCommit, rootGetters, rootDispatch } = playActionContext(
-                context
-            );
-            const player1 = rootGetters.players.player(match.player1) as IPlayer;
-            const player2 = rootGetters.players.player(match.player2) as IPlayer;
-            const player1Wins = match.player1 === match.winner;
-            const eloChange = elo.eloChange(
-                player1.elo,
-                player2.elo,
-                player1Wins
-            );
-            const matchLog = {
-                player1Name: player1.player,
-                player2Name: player2.player,
-                player1Wins: player1Wins,
-                player1Elo: player1.elo,
-                player2Elo: player2.elo,
-                eloChange,
-            } as IMatch;
-            player1.elo += (player1Wins ? 1 : -1) * eloChange;
-            player2.elo += (player1Wins ? -1 : 1) * eloChange;
-            rootDispatch.postMatch(matchLog);
-            rootDispatch.putUser({ id: match.player1, ...player1 });
-            rootDispatch.putUser({ id: match.player2, ...player2 });
-            rootCommit.players.setPlayer({ id: match.player1, ...player1 });
-            rootCommit.players.setPlayer({ id: match.player2, ...player2 });
-            rootCommit.players.rankPlayers();
-            return eloChange;
+        play: async (context, match: Match) => {
+            const { rootDispatch } = playActionContext(context);
+
+            match.play();
+
+            rootDispatch.matchHistory.addMatch(match.getMatchLog());
+            rootDispatch.players.updatePlayer(match.player1);
+            rootDispatch.players.updatePlayer(match.player2);
         },
         completeMatch: async context => {
             const { commit } = playActionContext(context);
 
             if (context.state.play.callback) context.state.play.callback();
-            const match = {
-                player1: context.state.play.player1,
-                player2: context.state.play.player2,
-                winner: context.state.play.winner,
-            };
-            const eloChange = await context.dispatch("play", match);
-            commit.setPlay(match);
-            return eloChange;
+            context.dispatch("play", context.state.play.match);
+            commit.setPlay({ match: context.state.play.match });
         },
     },
 });

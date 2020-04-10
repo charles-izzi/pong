@@ -1,87 +1,102 @@
 <template>
-    <v-container>
-        <v-card-title>
-            <span class="headline">Match History</span>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" class="ml-2 mb-2">mdi-help-circle-outline</v-icon>
-                </template>
-                Long press a match to prompt deletion
-            </v-tooltip>
-        </v-card-title>
-        <v-row class="px-3">
-            <v-col class="py-0 px-3">
-                <v-select
-                    v-model="playerFilter"
-                    label="Player"
-                    :clearable="true"
-                    :items="$repo.getters.players.dropdownPlayersList"
-                ></v-select>
-            </v-col>
-            <v-col class="py-0 px-3">
-                <v-select
-                    v-show="!!playerFilter"
-                    v-model="opponentFilter"
-                    label="Opponent"
-                    :clearable="true"
-                    :items="$repo.getters.players.dropdownPlayersList"
-                ></v-select>
-            </v-col>
-        </v-row>
-        <match-history-table style="width: 100%"></match-history-table>
-        <action></action>
-        <delete-match></delete-match>
-    </v-container>
+    <v-simple-table>
+        <template v-slot:default>
+            <thead>
+                <tr>
+                    <th class="text-left">Player</th>
+                    <th class="text-left">Opponent</th>
+                    <th class="text-center">Win/Loss</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    v-for="match in matches"
+                    :key="matchId(match)"
+                    @contextmenu.stop="showDeleteDialog(match)"
+                >
+                    <td>{{ getPlayer(match).player }}</td>
+                    <td>{{ getOpponent(match).player }}</td>
+                    <td
+                        :class="{
+            'text-center': true,
+            'red--text': !isWin(match),
+            'text--darken-4': !isWin(match),
+            'green--text': isWin(match),
+            'text--darken-4': isWin(match)
+            }"
+                    >{{ isWin(match) ? "Win" : "Loss" }}</td>
+                </tr>
+            </tbody>
+        </template>
+    </v-simple-table>
 </template>
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import Action from "./Action.vue";
-import MatchHistoryTable from "./MatchHistoryTable.vue";
-import DeleteMatch from "./DeleteMatch.vue";
+import Player from "@/business/data/player";
+import RecordedMatch from "@/business/data/recordedMatch";
 @Component({
-    components: {
-        action: Action,
-        "match-history-table": MatchHistoryTable,
-        "delete-match": DeleteMatch,
+    props: {
+        isDeleteDialog: Boolean,
+        playerFilter: Player,
+        opponentFilter: Player,
     },
 })
 export default class MatchHistory extends Vue {
-    deleteMatchKey = "";
-    get playerFilter() {
-        return this.$repo.state.matchHistory.matchesFilter.playerName;
+    isDeleteDialog!: boolean;
+    playerFilter!: Player;
+    opponentFilter!: Player;
+    get matches() {
+        if (this.isDeleteDialog) {
+            if (!this.$repo.state.matchHistory.deleteDialog.match?.id)
+                return [];
+            return [
+                this.$repo.state.matchHistory.matches.hash[
+                    this.$repo.state.matchHistory.deleteDialog.match.id
+                ],
+            ];
+        } else if (!this.playerFilter)
+            return this.$repo.state.matchHistory.matches.getMatches();
+        else if (!this.opponentFilter)
+            return this.$repo.state.matchHistory.matches.getMatchesByPlayer(
+                this.playerFilter.id
+            );
+        else
+            return this.$repo.state.matchHistory.matches.getMatchesByPlayerAndOpponent(
+                this.playerFilter.id,
+                this.opponentFilter.id
+            );
     }
-    set playerFilter(val: string) {
-        this.$repo.commit.matchHistory.setMatchesFilter({
-            playerName: val,
-            opponentName: this.opponentFilter,
-        });
+    getPlayer(match: RecordedMatch) {
+        if (this.playerFilter) return this.playerFilter;
+        return this.$repo.getters.matchHistory.matchPlayer1(match.id);
     }
-    get opponentFilter() {
-        return this.$repo.state.matchHistory.matchesFilter.opponentName;
+    getOpponent(match: RecordedMatch) {
+        if (this.opponentFilter) return this.opponentFilter;
+        if (
+            this.playerFilter &&
+            this.$repo.state.matchHistory.matches.hash[match.id].player1 !==
+                this.playerFilter.id
+        )
+            return this.$repo.getters.matchHistory.matchPlayer1(match.id);
+        return this.$repo.getters.matchHistory.matchPlayer2(match.id);
     }
-    set opponentFilter(val: string | undefined) {
-        this.$repo.commit.matchHistory.setMatchesFilter({
-            playerName: this.playerFilter,
-            opponentName: val,
-        });
+    isWin(match: RecordedMatch) {
+        if (
+            this.getPlayer(match).id ===
+            this.$repo.state.matchHistory.matches.hash[match.id].player1
+        )
+            return this.$repo.state.matchHistory.matches.hash[match.id]
+                .player1Wins;
+        return !this.$repo.state.matchHistory.matches.hash[match.id]
+            .player1Wins;
     }
-    mounted() {
-        this.$repo.dispatch.matchHistory.fetchMatches();
+    showDeleteDialog(match: RecordedMatch) {
+        if (this.isDeleteDialog) return;
+        this.$repo.commit.matchHistory.showDeleteDialog(match);
+    }
+    matchId(match: RecordedMatch) {
+        return match.id;
     }
 }
 </script>
-<style scoped>
-button.v-btn--fab {
-    position: fixed;
-    bottom: 5% !important;
-    right: 7% !important;
-    height: 75px !important;
-    width: 75px !important;
-}
-.v-btn--fab .v-icon {
-    height: 38px;
-    font-size: 38px;
-    width: 38px;
-}
-</style>

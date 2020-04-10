@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../components/Home.vue";
-import MatchHistory from "../components/MatchHistory.vue";
+import PlayerDetails from "../components/PlayerDetails.vue";
 import MatchMaker from "../components/MatchMaker.vue";
 
 Vue.use(VueRouter);
@@ -19,7 +19,7 @@ const routes = [
     {
         path: matchHistoryRoute,
         name: "matchHistory",
-        component: MatchHistory,
+        component: PlayerDetails,
     },
     {
         path: matchMakerRoute,

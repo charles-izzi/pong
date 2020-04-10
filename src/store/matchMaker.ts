@@ -26,21 +26,21 @@ export const matchMakerModule = defineModule({
         },
     },
     actions: {
-        loadMatchMaker: async context => {
-            const { state, commit, rootDispatch } = matchMakerActionContext(
+        loadMatchMaker: async (context, reset: boolean) => {
+            const { state, commit, rootState } = matchMakerActionContext(
                 context
             );
-            if (!Object.keys(state.matchMaker).length) {
+            if (!Object.keys(state.matchMaker).length || reset) {
                 commit.setMatchMaker(
-                    new MatchMaker(await rootDispatch.players.getPlayers(), 6)
+                    new MatchMaker(rootState.players.players, 6)
                 );
             } else {
-                state.matchMaker.playerData = await rootDispatch.players.getPlayers();
+                state.matchMaker.playerData = rootState.players.players;
             }
         },
         loadActiveMatches: context => {
             const { state, commit } = matchMakerActionContext(context);
-            if (state.activeMatches.length < 2 && state.matchMaker.getMatches())
+            if (state.activeMatches.length < 2 && state.matchMaker.getMatches().length)
                 commit.setActiveMatches(
                     state.matchMaker.getMatches().slice(0, 2)
                 );

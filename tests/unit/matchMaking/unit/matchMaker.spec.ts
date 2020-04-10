@@ -1,24 +1,24 @@
 import { MatchMaker } from "@/business/matchMaking/matchMaker";
-import { playerData } from "../behavior/matchMaker.spec";
 import { Players } from "@/business/matchMaking/players";
 import { Player } from "@/business/matchMaking/player";
 import { Match } from "@/business/matchMaking/match";
+import { TestData } from '../../testData';
 
 describe("Match Maker", () => {
     it("match maker is constructed properly", () => {
-        const matchMaker = new MatchMaker(playerData, 6);
+        const matchMaker = new MatchMaker(TestData.playerData, 6);
         expect(matchMaker).toEqual({
             playerPool: new Players(),
             plannedPlayers: new Players(),
             matches: [],
             memo: {},
-            playerData: playerData,
+            playerData: TestData.playerData,
             matchCount: 6,
         });
     });
 
     it("match maker resets planned players on setPlayer and matches properly", () => {
-        const matchMaker = new MatchMaker(playerData, 4);
+        const matchMaker = new MatchMaker(TestData.playerData, 4);
         const player1 = new Player("1");
         const player2 = new Player("2");
         const player3 = new Player("3");
@@ -37,12 +37,12 @@ describe("Match Maker", () => {
             playerList.map((x: Player) => x.id),
             []
         );
-        const match1 = new Match(playerData, player1, player2);
-        const match2 = new Match(playerData, player3, player2);
+        const match1 = new Match(TestData.playerData, player1, player2);
+        const match2 = new Match(TestData.playerData, player3, player2);
         match2.priority = 1;
-        const match3 = new Match(playerData, player1, player3);
+        const match3 = new Match(TestData.playerData, player1, player3);
         match3.priority = 2;
-        const match4 = new Match(playerData, player1, player2);
+        const match4 = new Match(TestData.playerData, player1, player2);
         match4.priority = 4;
         expect(matchMaker.getMatches()).toEqual([
             match1,

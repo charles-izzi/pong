@@ -1,4 +1,4 @@
-import { IPlayers as IPlayerData } from '@/store/players';
+import PlayerData from '@/business/data/players';
 import { Players } from './players';
 import { Player } from './player';
 import { PotentialMatches } from './potentialMatches';
@@ -13,7 +13,7 @@ export class MatchMaker {
     plannedPlayers: Players = new Players();
     private matches: Match[] = [];
     private memo: IMemo = {};
-    constructor(public playerData: IPlayerData, private matchCount: number) { }
+    constructor(public playerData: PlayerData, private matchCount: number) { }
 
     setPlayers(newPlayers: string[], activeMatches: Match[]) {
         this.playerPool.setPlayers(newPlayers);

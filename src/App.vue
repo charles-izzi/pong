@@ -35,17 +35,15 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { matchHistoryRoute, homeRoute } from "./router";
-import { IMatchesFilter } from "./store/matchHistory";
 
 @Component({})
 export default class App extends Vue {
     homeRoute: string = homeRoute;
     goToMatchHistory() {
-        this.$repo.commit.matchHistory.setMatchesFilter({} as IMatchesFilter);
         this.$router.push(matchHistoryRoute);
     }
     async mounted() {
-        if (!Object.keys(this.$repo.state.players.players).length)
+        if (!Object.keys(this.$repo.state.players.players.hash).length)
             this.$repo.dispatch.players.fetchPlayers();
     }
 }
