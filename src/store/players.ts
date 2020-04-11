@@ -63,11 +63,9 @@ export const playersModule = defineModule({
     actions: {
         fetchPlayers: async context => {
             const { state, commit } = playersActionContext(context);
+            if (state.players.list.length) return;
             state.players = new Players((await $http.get("/user.json")).data as IPlayers);
             commit.commitPlayers();
-        },
-        loadPlayers: async ({ state, dispatch }) => {
-            if (!state.players.list.length) return dispatch("fetchPlayers");
         },
         updatePlayer: (context, player: Player) => {
             const { commit, rootDispatch } = playersActionContext(context);

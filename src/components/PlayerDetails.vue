@@ -75,7 +75,10 @@ export default class PlayerDetails extends Vue {
     playerFilterId = "";
     opponentFilterId = "";
     get playerFilter() {
-        if (!this.playerFilterId || !this.$repo.state.players.players?.hash)
+        if (
+            !this.playerFilterId ||
+            !this.$repo.state.players.players?.list.length
+        )
             return null;
         return this.$repo.state.players.players.hash[this.playerFilterId];
     }
@@ -84,9 +87,7 @@ export default class PlayerDetails extends Vue {
             return null;
         return this.$repo.state.players.players.hash[this.opponentFilterId];
     }
-    async mounted() {
-        await this.$repo.dispatch.players.loadPlayers();
-        this.$repo.dispatch.matchHistory.fetchMatches();
+    async created() {
         if (this.$repo.getters.players.onePlayerSelected)
             this.playerFilterId = this.$repo.state.players.selectedPlayers[0];
     }

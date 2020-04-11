@@ -43,8 +43,8 @@ export default class App extends Vue {
         this.$router.push(matchHistoryRoute);
     }
     async mounted() {
-        if (!Object.keys(this.$repo.state.players.players.hash).length)
-            this.$repo.dispatch.players.fetchPlayers();
+        await this.$repo.dispatch.players.fetchPlayers();
+        this.$repo.dispatch.matchHistory.fetchMatches();
     }
 }
 </script>
