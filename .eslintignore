@@ -4,3 +4,4 @@ dist/
 *.json
 *.config.*
 shims-*.d.ts
+src/service-worker.js

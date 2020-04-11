@@ -34,8 +34,11 @@ module.exports = {
         "start_url": ".",
         "display": "standalone",
         "background_color": "#000000",
+        workboxPluginMode: 'InjectManifest',
         workboxOptions: {
-            skipWaiting: true
+            // swSrc is required in InjectManifest mode.
+            swSrc: 'src/service-worker.js',
+            // ...other Workbox options...
         }
     }
 };
