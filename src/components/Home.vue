@@ -5,10 +5,7 @@
                 <v-card>
                     <v-card-text>
                         <v-row class="mx-1">
-                            <span
-                                class="headline"
-                                style="color: rgb(0,0,0,.82)"
-                            >Player Selection Updated</span>
+                            <span class="headline" style="color: rgb(0,0,0,.82)">Player Selection</span>
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on }">
                                     <v-icon
