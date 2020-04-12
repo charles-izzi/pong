@@ -36,7 +36,7 @@ module.exports = {
         "background_color": "#000000",
         workboxPluginMode: 'InjectManifest',
         workboxOptions: {
-            swSrc: 'public/service-worker.js',
+            swSrc: 'src/service-worker.js',
         }
     }
 };
