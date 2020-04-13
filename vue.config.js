@@ -34,5 +34,9 @@ module.exports = {
         "start_url": ".",
         "display": "standalone",
         "background_color": "#000000",
+        workboxPluginMode: 'InjectManifest',
+        workboxOptions: {
+            swSrc: 'src/service-worker.js',
+        }
     }
 };

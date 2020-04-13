@@ -1,32 +1,40 @@
 import RecordedMatches from '../data/recordedMatches';
 import RecordedMatch from '../data/recordedMatch';
 import WinRate from './winRate';
+import FareAgainst from './fareAgainst';
+import Players from '../data/players';
 
 export interface IStat {
     readonly hasStat: boolean;
-    feedStat: (match: RecordedMatch, playerId?: string, opponentId?: string) => void;
+    feedStat: (match: RecordedMatch, playerFilterId?: string, opponentFilterId?: string) => void;
 }
 
 export default class Stats {
     private matches: RecordedMatch[] = [];
     winRate = new WinRate();
-    constructor(matches: RecordedMatches)
-    constructor(matches: RecordedMatches, playerId: string)
-    constructor(matches: RecordedMatches, playerId: string, opponentId: string)
-    constructor(matches: RecordedMatches, private playerId?: string, private opponentId?: string) {
-        if (!playerId)
+    strongAgainst = new FareAgainst(this.playerData, true);
+    weakAgainst = new FareAgainst(this.playerData, false);
+    constructor(playerData: Players, matches: RecordedMatches)
+    constructor(playerData: Players, matches: RecordedMatches, playerFilterId: string)
+    constructor(playerData: Players, matches: RecordedMatches, playerFilterId: string, opponentFilterId: string)
+    constructor(private playerData: Players, matches: RecordedMatches, private playerFilterId?: string, private opponentFilterId?: string) {
+        if (!playerFilterId)
             this.matches = matches.list;
-        else if (!opponentId) {
-            this.matches = matches.getMatchesByPlayer(playerId);
+        else if (!opponentFilterId) {
+            this.matches = matches.getMatchesByPlayer(playerFilterId);
         } else {
-            this.matches = matches.getMatchesByPlayerAndOpponent(playerId, opponentId);
+            this.matches = matches.getMatchesByPlayerAndOpponent(playerFilterId, opponentFilterId);
         }
         this.calculateStats();
     }
 
     private calculateStats() {
         for (let i = 0; i < this.matches.length; i++) {
-            this.winRate.feedStat(this.matches[i], this.playerId, this.opponentId);
+            this.winRate.feedStat(this.matches[i], this.playerFilterId, this.opponentFilterId);
+            this.strongAgainst.feedStat(this.matches[i], this.playerFilterId, this.opponentFilterId);
+            this.weakAgainst.feedStat(this.matches[i], this.playerFilterId, this.opponentFilterId);
         }
+        this.strongAgainst.calculateFares();
+        this.weakAgainst.calculateFares();
     }
 }

@@ -2,12 +2,6 @@
     <v-container>
         <v-card-title>
             <span class="headline">Player Details</span>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" class="ml-2 mb-2">mdi-help-circle-outline</v-icon>
-                </template>
-                Long press a match to prompt deletion
-            </v-tooltip>
         </v-card-title>
         <v-row class="px-3">
             <v-col class="py-0 px-3">
@@ -18,6 +12,7 @@
                     :items="$repo.state.players.players.list"
                     item-value="id"
                     item-text="player"
+                    @change="opponentFilterId = null"
                 ></v-select>
             </v-col>
             <v-col class="py-0 px-3">
@@ -33,7 +28,7 @@
             </v-col>
         </v-row>
         <v-row justify="center">
-            <v-expansion-panels accordion mandatory>
+            <v-expansion-panels accordion v-model="openPanel">
                 <v-expansion-panel>
                     <v-expansion-panel-header>Stats</v-expansion-panel-header>
                     <v-expansion-panel-content>
@@ -41,7 +36,21 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <v-expansion-panel>
-                    <v-expansion-panel-header>Match History</v-expansion-panel-header>
+                    <v-expansion-panel-header>
+                        Match History
+                        <span>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-icon
+                                        v-on="on"
+                                        class="ml-2 mb-2"
+                                        @click.native.stop
+                                    >mdi-help-circle-outline</v-icon>
+                                </template>
+                                Long press a match to prompt deletion
+                            </v-tooltip>
+                        </span>
+                    </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <match-history
                             :player-filter="playerFilter"
@@ -74,6 +83,7 @@ import Stats from "./Stats.vue";
 export default class PlayerDetails extends Vue {
     playerFilterId = "";
     opponentFilterId = "";
+    openPanel = 0;
     get playerFilter() {
         if (
             !this.playerFilterId ||

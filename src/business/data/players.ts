@@ -29,4 +29,8 @@ export default class Players {
         this._hash[newPlayer.id] = newPlayer;
         this._list.push(newPlayer);
     }
+
+    getName(playerId: string) {
+        return this.hash[playerId].player;
+    }
 }
