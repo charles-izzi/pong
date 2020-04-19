@@ -1,6 +1,7 @@
-import RecordedMatch from './recordedMatch';
+import RecordedMatch, { IRecordedMatch } from './recordedMatch';
 import Players from '@/business/data/players';
 import Player from './player';
+import { IRecordedMatchesData } from '@/store/matchHistory';
 
 export interface IRecordedMatches {
     [key: string]: RecordedMatch;
@@ -11,14 +12,14 @@ export default class RecordedMatches {
     private _list: RecordedMatch[] = [];
     private playerData: Players = new Players();
     constructor()
-    constructor(playerData: Players, matches: IRecordedMatches)
-    constructor(playerData?: Players, matches?: IRecordedMatches) {
+    constructor(playerData: Players, matches: IRecordedMatchesData)
+    constructor(playerData?: Players, matches?: IRecordedMatchesData) {
         if (!playerData || !matches) return;
         this.playerData = playerData;
         Object.keys(matches).forEach(x => {
-            const match = new RecordedMatch(x, matches[x]);
-            this.addMatch(match);
+            this.addMatch(x, matches[x]);
         });
+        this._list = this.sort(this.list);
     }
 
     get hash() {
@@ -28,9 +29,10 @@ export default class RecordedMatches {
         return this._list;
     }
 
-    addMatch(match: RecordedMatch) {
-        this._hash[match.id] = match;
-        this._list.push(match);
+    addMatch(id: string, match: IRecordedMatch) {
+        const recordedMatch = new RecordedMatch(id, match);
+        this._hash[id] = recordedMatch;
+        this._list.splice(0, 0, recordedMatch);
     }
 
     removeMatch(match: RecordedMatch) {
@@ -38,25 +40,25 @@ export default class RecordedMatches {
         this._list.splice(this._list.indexOf(match), 1);
     }
 
-    getMatches() {
-        return this.sort(this.list);
+    getSortedMatches() {
+        return this._list;
     }
 
-    getMatchesByPlayer(id: string) {
-        return this.sort(this.list.filter(x => {
+    getSortedMatchesByPlayer(id: string) {
+        return this._list.filter(x => {
             const matchPlayer1Id = this.playerData.hash[x.player1].id;
             const matchPlayer2Id = this.playerData.hash[x.player2].id;
             return id === matchPlayer1Id || id === matchPlayer2Id;
-        }));
+        });
     }
 
-    getMatchesByPlayerAndOpponent(playerId: string, opponentId: string) {
-        return this.sort(this.list.filter(x => {
+    getSortedMatchesByPlayerAndOpponent(playerId: string, opponentId: string) {
+        return this._list.filter(x => {
             const matchPlayer1Id = this.playerData.hash[x.player1].id;
             const matchPlayer2Id = this.playerData.hash[x.player2].id;
             return (playerId === matchPlayer1Id && opponentId === matchPlayer2Id) ||
                 (playerId === matchPlayer2Id && opponentId === matchPlayer1Id);
-        }));
+        });
     }
 
     getOpponents(playerId: string) {

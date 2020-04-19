@@ -11,16 +11,16 @@
             </v-col>
             <v-col cols="12">
                 <fare-against
-                    v-if="hasStat(stats.strongAgainst)"
+                    v-if="hasStrongStat"
                     :strong="true"
-                    :playerFares="stats.strongAgainst.fares"
+                    :playerFares="stats.fareAgainst.strong.fares"
                 ></fare-against>
             </v-col>
             <v-col cols="12">
                 <fare-against
-                    v-if="hasStat(stats.weakAgainst)"
+                    v-if="hasWeakStat"
                     :strong="false"
-                    :playerFares="stats.weakAgainst.fares"
+                    :playerFares="stats.fareAgainst.weak.fares"
                 ></fare-against>
             </v-col>
             <v-spacer></v-spacer>
@@ -47,6 +47,14 @@ export default Vue.extend({
         return {
             stats: {} as StatsCalculator,
         };
+    },
+    computed: {
+        hasStrongStat(): boolean {
+            return this.hasStat(this.stats?.fareAgainst?.strong);
+        },
+        hasWeakStat(): boolean {
+            return this.hasStat(this.stats?.fareAgainst?.weak);
+        },
     },
     watch: {
         playerFilter() {

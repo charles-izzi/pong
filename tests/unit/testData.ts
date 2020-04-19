@@ -70,6 +70,10 @@ export class TestData {
         },
     });
 
+    static get playerDataCopy() {
+        return new Players({ ...TestData.playerData.hash });
+    }
+
     static get matches() {
         return new RecordedMatches(TestData.playerData, {
             "1": new RecordedMatch("1", { player1: "1", player2: "2", player1Elo: 1000, player2Elo: 1500, player1Wins: true, eloChange: 30, timestamp: new Date(1) }),

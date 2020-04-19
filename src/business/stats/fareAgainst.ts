@@ -14,15 +14,34 @@ interface IFare {
     actual: number;
 }
 
-export default class FareAgainst implements IStat {
+interface IFareStat extends IStat {
+    fares: IFare[];
+}
 
-    fares: IFare[] = [];
-    actualRatesByOpponent = {} as IWinRates;
+const FARE_AGAINST_COUNT = 3;
+const MIN_MATCH_PER_OPPONENT = 2;
+
+export default class FareAgainst {
+
+    private actualRatesByOpponent = {} as IWinRates;
+    private fares: IFare[] = [];
     private playerId = "";
-    constructor(private playerData: Players, private strongAgainst: boolean) { }
+    constructor(private playerData: Players) { }
 
-    get hasStat() {
-        return !!this.fares.length;
+    get strong(): IFareStat {
+        const fares = this.getTopFares(true);
+        return {
+            fares,
+            hasStat: fares.length > 0
+        };
+    }
+
+    get weak(): IFareStat {
+        const fares = this.getTopFares(false);
+        return {
+            fares: fares,
+            hasStat: fares.length > 0
+        };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -46,10 +65,8 @@ export default class FareAgainst implements IStat {
         for (let i = 0; i < actualRatesKeys.length; i++) {
             const expectedWinRate = this.getExpectedWinPercentage(this.playerData.hash[this.playerId].elo, this.playerData.hash[actualRatesKeys[i]].elo);
             const actualWinRate = this.actualRatesByOpponent[actualRatesKeys[i]].winRate;
-            const moreThanOneGamePlayed = this.actualRatesByOpponent[actualRatesKeys[i]].totalCount > 1;
-            if (moreThanOneGamePlayed &&
-                ((this.strongAgainst && expectedWinRate < actualWinRate) ||
-                    (!this.strongAgainst && expectedWinRate > actualWinRate))) {
+            const hasMinOpponentMatches = this.actualRatesByOpponent[actualRatesKeys[i]].totalCount >= MIN_MATCH_PER_OPPONENT;
+            if (hasMinOpponentMatches) {
                 this.fares.push({
                     opponentId: actualRatesKeys[i],
                     expected: expectedWinRate,
@@ -59,19 +76,24 @@ export default class FareAgainst implements IStat {
         }
         //sort that list by the greatest difference between expected and actual
         this.fares.sort((a, b) => {
-            if (this.strongAgainst) {
-                if ((a.actual - a.expected) > (b.actual - b.expected)) return -1;
-                return 1;
-            } else {
-                if ((a.actual - a.expected) > (b.actual - b.expected)) return 1;
-                return -1;
-            }
+            if ((a.actual - a.expected) > (b.actual - b.expected)) return -1;
+            return 1;
         });
-        //take top 3 (for ux reasons)
-        this.fares = this.fares.slice(0, 3);
     }
 
     private getExpectedWinPercentage(eloA: number, eloB: number) {
         return Math.round(elo.expectedWinRate(eloA, eloB) * 100);
+    }
+
+    private getTopFares(strong: boolean) {
+        const fares: IFare[] = [];
+        for (let i = 0; i < FARE_AGAINST_COUNT && i < this.fares.length; i++) {
+            const ix = strong ? i : this.fares.length - i - 1;
+            if ((this.fares[ix].expected < this.fares[ix].actual && strong) ||
+                (this.fares[ix].expected > this.fares[ix].actual && !strong)) {
+                fares.push(this.fares[ix]);
+            }
+        }
+        return fares;
     }
 }

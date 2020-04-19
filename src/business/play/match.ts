@@ -2,12 +2,20 @@ import elo from '../play/elo';
 import Player from '../data/player';
 import { IRecordedMatch } from '../data/recordedMatch';
 
-export default class {
+export default class Match {
     private eloChange = 0;
     private timestamp: Date | null = null;
+    private player1OriginalElo = 0;
+    private player2OriginalElo = 0;
+    player1: Player;
+    player2: Player;
+
     constructor(player1: Player, player2: Player)
     constructor(player1: Player, player2: Player, winnerId: string)
-    constructor(public player1: Player, public player2: Player, public winnerId?: string) { }
+    constructor(player1: Player, player2: Player, public winnerId?: string) {
+        this.player1 = new Player(player1);
+        this.player2 = new Player(player2);
+    }
 
     get player1Wins() {
         return this.player1.id === this.winnerId;
@@ -27,7 +35,9 @@ export default class {
             this.player1Wins
         );
 
+        this.player1OriginalElo = this.player1.elo;
         this.player1.elo += (this.player1Wins ? 1 : -1) * this.eloChange;
+        this.player2OriginalElo = this.player2.elo;
         this.player2.elo += (this.player1Wins ? -1 : 1) * this.eloChange;
     }
 
@@ -36,8 +46,8 @@ export default class {
             player1: this.player1.id,
             player2: this.player2.id,
             player1Wins: this.player1Wins,
-            player1Elo: this.player1.elo,
-            player2Elo: this.player2.elo,
+            player1Elo: this.player1OriginalElo,
+            player2Elo: this.player2OriginalElo,
             eloChange: this.eloChange,
             timestamp: this.timestamp,
         } as IRecordedMatch;

@@ -1,7 +1,7 @@
 import { $http, moduleActionContext } from ".";
 import { defineModule } from "direct-vuex";
-import Player from '@/business/data/player';
-import Players, { IPlayers } from '@/business/data/players';
+import Player, { IPlayer } from '@/business/data/player';
+import Players from '@/business/data/players';
 
 export interface PlayersModuleState {
     players: Players;
@@ -12,6 +12,10 @@ export interface PlayersModuleState {
 export interface IDropdown {
     text: string | number | object;
     value: string | number | object;
+}
+
+export interface IPlayersData {
+    [key: string]: IPlayer;
 }
 
 export const playersModule = defineModule({
@@ -48,7 +52,6 @@ export const playersModule = defineModule({
                 (x: string, index: number) =>
                     (state.players.hash[x].rank = index + 1)
             );
-            state.players = new Players(state.players.hash);
         },
         removeSelectedPlayer: (state, id: string) => {
             state.selectedPlayers.splice(state.selectedPlayers.indexOf(id), 1);
@@ -64,12 +67,13 @@ export const playersModule = defineModule({
         fetchPlayers: async context => {
             const { state, commit } = playersActionContext(context);
             if (state.players.list.length) return;
-            state.players = new Players((await $http.get("/user.json")).data as IPlayers);
+            state.players = new Players((await $http.get("/user.json")).data as IPlayersData);
             commit.commitPlayers();
         },
         updatePlayer: (context, player: Player) => {
-            const { commit, rootDispatch } = playersActionContext(context);
+            const { state, commit, rootDispatch } = playersActionContext(context);
             rootDispatch.putUser(player);
+            state.players.updatePlayer(player);
             commit.commitPlayers();
         },
         addPlayer: async (context, val: string) => {

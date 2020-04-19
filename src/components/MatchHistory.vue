@@ -55,14 +55,15 @@ export default class MatchHistory extends Vue {
                     this.$repo.state.matchHistory.deleteDialog.match.id
                 ],
             ];
-        } else if (!this.playerFilter)
-            return this.$repo.state.matchHistory.matches.getMatches();
-        else if (!this.opponentFilter)
-            return this.$repo.state.matchHistory.matches.getMatchesByPlayer(
+        } else if (!this.playerFilter) {
+            const sortedMatches = this.$repo.state.matchHistory.matches.getSortedMatches();
+            return sortedMatches;
+        } else if (!this.opponentFilter)
+            return this.$repo.state.matchHistory.matches.getSortedMatchesByPlayer(
                 this.playerFilter.id
             );
         else
-            return this.$repo.state.matchHistory.matches.getMatchesByPlayerAndOpponent(
+            return this.$repo.state.matchHistory.matches.getSortedMatchesByPlayerAndOpponent(
                 this.playerFilter.id,
                 this.opponentFilter.id
             );

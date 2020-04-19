@@ -21,7 +21,7 @@
                     v-model="opponentFilterId"
                     label="Opponent"
                     :clearable="true"
-                    :items="$repo.state.matchHistory.matches.getOpponents(playerFilterId)"
+                    :items="opponents"
                     item-value="id"
                     item-text="player"
                 ></v-select>
@@ -62,7 +62,7 @@
             </v-expansion-panels>
         </v-row>
         <action></action>
-        <delete-dialog></delete-dialog>
+        <delete-match-dialog></delete-match-dialog>
     </v-container>
 </template>
 <script lang="ts">
@@ -70,13 +70,13 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import Action from "./Action.vue";
 import MatchHistory from "./MatchHistory.vue";
-import DeleteDialog from "./DeleteDialog.vue";
+import DeleteMatchDialog from "./DeleteMatchDialog.vue";
 import Stats from "./Stats.vue";
 @Component({
     components: {
         action: Action,
         "match-history": MatchHistory,
-        "delete-dialog": DeleteDialog,
+        "delete-match-dialog": DeleteMatchDialog,
         stats: Stats,
     },
 })
@@ -100,6 +100,12 @@ export default class PlayerDetails extends Vue {
     async created() {
         if (this.$repo.getters.players.onePlayerSelected)
             this.playerFilterId = this.$repo.state.players.selectedPlayers[0];
+    }
+    get opponents() {
+        if (!this.playerFilterId) return this.$repo.state.players.players.list;
+        return this.$repo.state.matchHistory.matches.getOpponents(
+            this.playerFilterId
+        );
     }
 }
 </script>

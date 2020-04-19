@@ -47,10 +47,14 @@
                             <tr v-for="player in players" :key="player.id">
                                 <td>{{ player.player }}</td>
                                 <td
-                                    :style="{ color: !$repo.getters.play.isPlayerWinner(player.id) ? 'red' : 'green' }"
+                                    :style="{ color: !$repo.state.play.play.match.isPlayerWinner(player.id) ? 'red' : 'green' }"
                                 >
-                                    <span v-show="$repo.getters.play.isPlayerWinner(player.id)">+</span>
-                                    <span v-show="!$repo.getters.play.isPlayerWinner(player.id)">-</span>
+                                    <span
+                                        v-show="$repo.state.play.play.match.isPlayerWinner(player.id)"
+                                    >+</span>
+                                    <span
+                                        v-show="!$repo.state.play.play.match.isPlayerWinner(player.id)"
+                                    >-</span>
                                     {{ $repo.state.play.play.match.eloChange }}
                                 </td>
                                 <td>{{ player.elo }}</td>

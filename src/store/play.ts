@@ -25,9 +25,6 @@ export const playModule = defineModule({
             play: { showDialog: false } as IPlayDialog,
         };
     },
-    getters: {
-        isPlayerWinner: state => (id: string) => state.play.match.winnerId === id,
-    },
     mutations: {
         setWinner: (state, winner: string) => {
             state.play.match.winnerId = winner;

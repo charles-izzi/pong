@@ -1,6 +1,6 @@
 import { $http, moduleActionContext } from ".";
 import { defineModule } from "direct-vuex";
-import RecordedMatches, { IRecordedMatches } from '@/business/data/recordedMatches';
+import RecordedMatches from '@/business/data/recordedMatches';
 import RecordedMatch, { IRecordedMatch } from '@/business/data/recordedMatch';
 import Player from '@/business/data/player';
 
@@ -12,6 +12,10 @@ export interface MatchHistoryModuleState {
 export interface IDeleteDialog {
     show: boolean;
     match: RecordedMatch;
+}
+
+export interface IRecordedMatchesData {
+    [key: string]: IRecordedMatch;
 }
 
 export const matchHistoryModule = defineModule({
@@ -50,13 +54,12 @@ export const matchHistoryModule = defineModule({
     actions: {
         fetchMatches: async context => {
             const { commit, rootState } = matchHistoryActionContext(context);
-            commit.setMatches(new RecordedMatches(rootState.players.players, (await $http.get("/matchHistory.json")).data as IRecordedMatches));
+            commit.setMatches(new RecordedMatches(rootState.players.players, (await $http.get("/matchHistory.json")).data as IRecordedMatchesData));
         },
         addMatch: async (context, match: IRecordedMatch) => {
-            const {
-                rootDispatch,
-            } = matchHistoryActionContext(context);
-            await rootDispatch.postMatch(match)
+            const { state, rootDispatch } = matchHistoryActionContext(context);
+            const newMatchId = (await rootDispatch.postMatch(match)).data.name;
+            state.matches.addMatch(newMatchId, match);
         },
         deleteMatch: async (context, matchKey: string) => {
             await $http.delete(`matchHistory/${matchKey}.json`);
