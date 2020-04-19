@@ -56,7 +56,7 @@ export default class MatchHistory extends Vue {
                 ],
             ];
         } else if (!this.playerFilter) {
-            const sortedMatches = this.$repo.state.matchHistory.matches.getSortedMatches();
+            const sortedMatches = this.$repo.state.matchHistory.matches.list;
             return sortedMatches;
         } else if (!this.opponentFilter)
             return this.$repo.state.matchHistory.matches.getSortedMatchesByPlayer(

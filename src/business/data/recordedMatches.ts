@@ -40,10 +40,6 @@ export default class RecordedMatches {
         this._list.splice(this._list.indexOf(match), 1);
     }
 
-    getSortedMatches() {
-        return this._list;
-    }
-
     getSortedMatchesByPlayer(id: string) {
         return this._list.filter(x => {
             const matchPlayer1Id = this.playerData.hash[x.player1].id;

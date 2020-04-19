@@ -13,9 +13,9 @@ describe("Recorded Matches", () => {
         const match2 = { player1: "1", player2: "3", player1Elo: 1200, player2Elo: 1300, player1Wins: true, eloChange: 20, timestamp: new Date(2) };
         const match3 = { player1: "1", player2: "4", player1Elo: 1300, player2Elo: 1200, player1Wins: true, eloChange: 10, timestamp: new Date(3) };
         const matches = new RecordedMatches(TestData.playerData, {
-            "1": match1,
-            "2": match2,
             "3": match3,
+            "2": match2,
+            "1": match1,
         });
         expect(matches.hash).toEqual({
             "1": new RecordedMatch("1", match1),
@@ -23,9 +23,9 @@ describe("Recorded Matches", () => {
             "3": new RecordedMatch("3", match3),
         });
         expect(matches.list).toEqual([
-            new RecordedMatch("1", match1),
-            new RecordedMatch("2", match2),
             new RecordedMatch("3", match3),
+            new RecordedMatch("2", match2),
+            new RecordedMatch("1", match1),
         ]);
     });
     it("addMatch adds the match to hash and list", () => {
@@ -40,8 +40,8 @@ describe("Recorded Matches", () => {
             "2": new RecordedMatch("2", match2),
         });
         expect(matches.list).toEqual([
-            new RecordedMatch("1", match1),
             new RecordedMatch("2", match2),
+            new RecordedMatch("1", match1),
         ]);
     });
     it("removeMatch removes the match from hash and list", () => {
@@ -59,7 +59,7 @@ describe("Recorded Matches", () => {
             new RecordedMatch("2", match2),
         ]);
     });
-    it("getSortedMatches returns matches list sorted by date desc", () => {
+    it("list returns matches sorted by date desc", () => {
         const match1 = { player1: "1", player2: "3", player1Elo: 1200, player2Elo: 1300, player1Wins: true, eloChange: 20, timestamp: new Date(3) };
         const match2 = { player1: "1", player2: "3", player1Elo: 1200, player2Elo: 1300, player1Wins: true, eloChange: 20, timestamp: new Date(1) };
         const match3 = { player1: "1", player2: "3", player1Elo: 1200, player2Elo: 1300, player1Wins: true, eloChange: 20, timestamp: new Date(4) };
@@ -71,12 +71,6 @@ describe("Recorded Matches", () => {
             "4": match4
         });
         expect(matches.list).toEqual([
-            new RecordedMatch("1", match1),
-            new RecordedMatch("2", match2),
-            new RecordedMatch("3", match3),
-            new RecordedMatch("4", match4)
-        ]);
-        expect(matches.getSortedMatches()).toEqual([
             new RecordedMatch("3", match3),
             new RecordedMatch("1", match1),
             new RecordedMatch("4", match4),
