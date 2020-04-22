@@ -76,22 +76,22 @@ export class TestData {
 
     static get matches() {
         return new RecordedMatches(TestData.playerData, {
-            "1": new RecordedMatch("1", { player1: "1", player2: "2", player1Elo: 1000, player2Elo: 1500, player1Wins: true, eloChange: 30, timestamp: new Date(1) }),
-            "2": new RecordedMatch("2", { player1: "1", player2: "3", player1Elo: 1200, player2Elo: 1300, player1Wins: true, eloChange: 20, timestamp: new Date(2) }),
-            "3": new RecordedMatch("3", { player1: "1", player2: "4", player1Elo: 1300, player2Elo: 1200, player1Wins: true, eloChange: 10, timestamp: new Date(3) }),
-            "4": new RecordedMatch("4", { player1: "1", player2: "5", player1Elo: 1350, player2Elo: 1150, player1Wins: false, eloChange: 7, timestamp: new Date(4) }),
-            "5": new RecordedMatch("5", { player1: "1", player2: "6", player1Elo: 1400, player2Elo: 1500, player1Wins: false, eloChange: 10, timestamp: new Date(5) }),
-            "6": new RecordedMatch("6", { player1: "1", player2: "7", player1Elo: 1350, player2Elo: 1300, player1Wins: false, eloChange: 17, timestamp: new Date(6) }),
-            "7": new RecordedMatch("7", { player1: "1", player2: "2", player1Elo: 1300, player2Elo: 1250, player1Wins: false, eloChange: 17, timestamp: new Date(7) }),
-            "9": new RecordedMatch("9", { player1: "2", player2: "3", player1Elo: 1300, player2Elo: 1500, player1Wins: false, eloChange: 7, timestamp: new Date(9) }),
-            "8": new RecordedMatch("8", { player1: "2", player2: "4", player1Elo: 1250, player2Elo: 1200, player1Wins: true, eloChange: 10, timestamp: new Date(8) }),
-            "10": new RecordedMatch("10", { player1: "2", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: false, eloChange: 25, timestamp: new Date(10) }),
-            "11": new RecordedMatch("11", { player1: "2", player2: "3", player1Elo: 1250, player2Elo: 1100, player1Wins: true, eloChange: 25, timestamp: new Date(11) }),
-            "12": new RecordedMatch("12", { player1: "1", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: true, eloChange: 25, timestamp: new Date(12) }),
-            "13": new RecordedMatch("13", { player1: "3", player2: "1", player1Elo: 1250, player2Elo: 1100, player1Wins: true, eloChange: 25, timestamp: new Date(13) }),
-            "14": new RecordedMatch("14", { player1: "4", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: false, eloChange: 25, timestamp: new Date(14) }),
-            "15": new RecordedMatch("15", { player1: "4", player2: "6", player1Elo: 1250, player2Elo: 1100, player1Wins: true, eloChange: 25, timestamp: new Date(14) }),
-            "16": new RecordedMatch("16", { player1: "6", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: false, eloChange: 25, timestamp: new Date(15) }),
+            "1": new RecordedMatch("1", { player1: "1", player2: "2", player1Elo: 1000, player2Elo: 1500, player1Wins: true, eloChange: 30, timestamp: new Date("1/1/2019") }),
+            "2": new RecordedMatch("2", { player1: "1", player2: "3", player1Elo: 1200, player2Elo: 1300, player1Wins: true, eloChange: 20, timestamp: new Date("1/2/2019") }),
+            "3": new RecordedMatch("3", { player1: "1", player2: "4", player1Elo: 1300, player2Elo: 1200, player1Wins: true, eloChange: 10, timestamp: new Date("1/21/2019") }),
+            "4": new RecordedMatch("4", { player1: "1", player2: "5", player1Elo: 1350, player2Elo: 1150, player1Wins: false, eloChange: 7, timestamp: new Date("2/1/2019") }),
+            "5": new RecordedMatch("5", { player1: "1", player2: "6", player1Elo: 1400, player2Elo: 1500, player1Wins: false, eloChange: 10, timestamp: new Date("2/2/2019") }),
+            "6": new RecordedMatch("6", { player1: "1", player2: "7", player1Elo: 1350, player2Elo: 1050, player1Wins: false, eloChange: 17, timestamp: new Date("2/21/2019") }),
+            "7": new RecordedMatch("7", { player1: "1", player2: "2", player1Elo: 1300, player2Elo: 1250, player1Wins: false, eloChange: 17, timestamp: new Date("10/1/2019") }),
+            "8": new RecordedMatch("8", { player1: "2", player2: "4", player1Elo: 1250, player2Elo: 1200, player1Wins: true, eloChange: 10, timestamp: new Date("10/10/2019") }),
+            "9": new RecordedMatch("9", { player1: "2", player2: "3", player1Elo: 1300, player2Elo: 1500, player1Wins: false, eloChange: 7, timestamp: new Date("1/1/2020") }),
+            "10": new RecordedMatch("10", { player1: "2", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: false, eloChange: 25, timestamp: new Date("1/2/2020") }),
+            "11": new RecordedMatch("11", { player1: "2", player2: "3", player1Elo: 1250, player2Elo: 1650, player1Wins: true, eloChange: 25, timestamp: new Date("1/10/2020") }),
+            "12": new RecordedMatch("12", { player1: "1", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: true, eloChange: 25, timestamp: new Date("2/1/2020") }),
+            "13": new RecordedMatch("13", { player1: "3", player2: "1", player1Elo: 1250, player2Elo: 1100, player1Wins: true, eloChange: 25, timestamp: new Date("2/2/2020") }),
+            "14": new RecordedMatch("14", { player1: "4", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: false, eloChange: 25, timestamp: new Date("2/21/2020") }),
+            "15": new RecordedMatch("15", { player1: "4", player2: "6", player1Elo: 1250, player2Elo: 1100, player1Wins: true, eloChange: 25, timestamp: new Date("10/1/2020") }),
+            "16": new RecordedMatch("16", { player1: "6", player2: "5", player1Elo: 1250, player2Elo: 1100, player1Wins: false, eloChange: 25, timestamp: new Date("10/10/2020") }),
         });
     }
 

@@ -37,4 +37,16 @@ describe("Fare Against", () => {
             { opponentId: "2", expected: 57, actual: 50 }
         ]);
     });
+    it("player 1 vs player 2 is weak", () => {
+        const stats = new Stats(TestData.playerData, TestData.matches, "1", "2");
+        expect(stats.fareAgainst.weak.fares).toEqual([
+            { opponentId: "2", expected: 57, actual: 50 }
+        ]);
+    });
+    it("player 2 vs player 3 is weak", () => {
+        const stats = new Stats(TestData.playerData, TestData.matches, "2", "3");
+        expect(stats.fareAgainst.weak.fares).toEqual([
+            { opponentId: "3", expected: 57, actual: 50 }
+        ]);
+    });
 });

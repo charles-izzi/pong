@@ -61,7 +61,7 @@
                 </v-expansion-panel>
             </v-expansion-panels>
         </v-row>
-        <action></action>
+        <action class="player-details"></action>
         <delete-match-dialog></delete-match-dialog>
     </v-container>
 </template>
@@ -109,17 +109,11 @@ export default class PlayerDetails extends Vue {
     }
 }
 </script>
-<style scoped>
-button.v-btn--fab {
-    position: fixed;
-    bottom: 5% !important;
-    right: 7% !important;
-    height: 75px !important;
-    width: 75px !important;
+<style>
+.v-expansion-panel-content__wrap {
+    padding: 6px !important;
 }
-.v-btn--fab .v-icon {
-    height: 38px;
-    font-size: 38px;
-    width: 38px;
+.v-expansion-panel-header {
+    padding: 0px 12px !important;
 }
 </style>

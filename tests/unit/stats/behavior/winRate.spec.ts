@@ -22,4 +22,18 @@ describe("Win Rate", () => {
         expect(stats.winRate.winCount).toBe(4);
         expect(stats.winRate.loseCount).toBe(1);
     });
+
+    it("player 1 vs player 2 has win rate of 50", () => {
+        const stats = new Stats(TestData.playerData, TestData.matches, "1", "2");
+        expect(stats.winRate.winRate).toBe(50);
+        expect(stats.winRate.winCount).toBe(1);
+        expect(stats.winRate.loseCount).toBe(1);
+    });
+
+    it("player 2 vs player 3 has win rate of 50", () => {
+        const stats = new Stats(TestData.playerData, TestData.matches, "2", "3");
+        expect(stats.winRate.winRate).toBe(50);
+        expect(stats.winRate.winCount).toBe(1);
+        expect(stats.winRate.loseCount).toBe(1);
+    });
 });

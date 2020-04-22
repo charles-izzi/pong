@@ -3,6 +3,8 @@ import RecordedMatch from '../data/recordedMatch';
 import WinRate from './winRate';
 import FareAgainst from './fareAgainst';
 import Players from '../data/players';
+import Streak from './streak';
+import MaxRating from './maxRating';
 
 export interface IStat {
     readonly hasStat: boolean;
@@ -13,6 +15,8 @@ export default class Stats {
     private matches: RecordedMatch[] = [];
     winRate = new WinRate();
     fareAgainst = new FareAgainst(this.playerData);
+    streak = new Streak();
+    maxRating = new MaxRating();
     constructor(playerData: Players, matches: RecordedMatches)
     constructor(playerData: Players, matches: RecordedMatches, playerFilterId: string)
     constructor(playerData: Players, matches: RecordedMatches, playerFilterId: string, opponentFilterId: string)
@@ -31,6 +35,8 @@ export default class Stats {
         for (let i = 0; i < this.matches.length; i++) {
             this.winRate.feedStat(this.matches[i], this.playerFilterId, this.opponentFilterId);
             this.fareAgainst.feedStat(this.matches[i], this.playerFilterId, this.opponentFilterId);
+            this.streak.feedStat(this.matches[i], this.playerFilterId, this.opponentFilterId);
+            this.maxRating.feedStat(this.matches[i], this.playerFilterId, this.opponentFilterId);
         }
         this.fareAgainst.calculateFares();
     }
