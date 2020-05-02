@@ -1,14 +1,11 @@
 <template>
     <v-card class="number-card">
         <v-card-title>{{title}}</v-card-title>
-        <v-card-text
-            :class="{'text-center': true, 'display-2': !dense, 'display-1': dense, 'text-padding': !dense}"
-        >{{value}}</v-card-text>
+        <v-card-text :class="valueTypography()">{{stringValue}}</v-card-text>
         <v-card-subtitle>
             <v-row dense>
-                <v-col>{{subtitle}}</v-col>
-                <v-spacer></v-spacer>
-                <v-col>{{secondSubtitle}}</v-col>
+                <v-col class="col-auto mr-auto">{{subtitle}}</v-col>
+                <v-col class="col-auto">{{secondSubtitle}}</v-col>
             </v-row>
         </v-card-subtitle>
     </v-card>
@@ -19,16 +16,40 @@ import Component from "vue-class-component";
 @Component({
     props: {
         title: String,
-        value: Number,
-        subtitle: String,
-        secondSubtitle: String,
+        value: [Number, String],
+        subtitle: [Number, String],
+        secondSubtitle: [Number, String],
         dense: Boolean,
     },
 })
-export default class NumberStat extends Vue {}
+export default class NumberStat extends Vue {
+    value!: string | number;
+    dense!: boolean;
+    get stringValue() {
+        if (typeof this.value === "string") return this.value;
+        return this.value.toString();
+    }
+    valueTypography() {
+        return {
+            "text-center": true,
+            "py-auto": true,
+            small: this.dense,
+            large: !this.dense,
+            "display-2": this.stringValue.length < 4,
+            "display-1":
+                this.stringValue.length >= 4 && this.stringValue.length < 9,
+            headline:
+                this.stringValue.length >= 9 && this.stringValue.length < 11,
+            title: this.stringValue.length >= 11,
+        };
+    }
+}
 </script>
 <style>
-.number-card .text-padding {
-    padding: 5px 0 !important;
+.number-card .large {
+    min-height: 60px !important;
+}
+.number-card .small {
+    min-height: 40px !important;
 }
 </style>

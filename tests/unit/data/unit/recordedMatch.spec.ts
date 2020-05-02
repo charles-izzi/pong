@@ -117,5 +117,20 @@ describe("Recorded Match", () => {
         expect(recordedMatch.getOpponentElo("2")).toBe(1000);
         expect(recordedMatch.getOpponentElo("3")).toBe(undefined);
         expect(recordedMatch.getOpponentElo("4")).toBe(undefined);
-    })
+    });
+    it("getPlayerElo return the elo of the passed in player id", () => {
+        const recordedMatch = new RecordedMatch("1", {
+            player1: "1",
+            player2: "2",
+            player1Elo: 1000,
+            player2Elo: 1500,
+            player1Wins: false,
+            eloChange: 30,
+            timestamp: new Date(1)
+        });
+        expect(recordedMatch.getPlayerElo("1")).toBe(1000);
+        expect(recordedMatch.getPlayerElo("2")).toBe(1500);
+        expect(recordedMatch.getPlayerElo("3")).toBe(undefined);
+        expect(recordedMatch.getPlayerElo("4")).toBe(undefined);
+    });
 });

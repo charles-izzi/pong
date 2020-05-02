@@ -72,4 +72,10 @@ export default class RecordedMatch implements IRecordedMatch {
         if (playerId === this.player1) return this.player2Elo;
         return this.player1Elo;
     }
+
+    getPlayerElo(playerId?: string) {
+        if (!this.hasPlayer(playerId)) return undefined;
+        if (playerId === this.player1) return this.player1Elo;
+        return this.player2Elo;
+    }
 }

@@ -1,9 +1,10 @@
-import { IStat } from './stats';
+import { IStat, IStatsData } from './stats';
 import RecordedMatch from '../data/recordedMatch';
 
 export default class WinRate implements IStat {
     winCount = 0;
     totalCount = 0;
+    constructor(private statsData: IStatsData) { }
 
     get hasStat() {
         return this.totalCount > 0;
@@ -18,9 +19,9 @@ export default class WinRate implements IStat {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    feedStat(match: RecordedMatch, playerFilterId?: string, opponentFilterId?: string) {
-        if (!playerFilterId) return;
-        if (match.isWinner(playerFilterId)) this.winCount++;
+    feedStat(match: RecordedMatch) {
+        if (!this.statsData.playerFilterId) return;
+        if (match.isWinner(this.statsData.playerFilterId)) this.winCount++;
         this.totalCount++;
     }
 }

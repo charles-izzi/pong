@@ -1,6 +1,12 @@
 <template>
     <div class="stats">
         <v-row dense>
+            <v-col cols="12">
+                <rating-vs-time
+                    v-if="hasStat(stats.ratingVsTime)"
+                    :chartdata="stats.ratingVsTime.chartData"
+                ></rating-vs-time>
+            </v-col>
             <v-col cols="4">
                 <win-rate
                     v-if="hasStat(stats.winRate)"
@@ -9,7 +15,6 @@
                     :lose-count="stats.winRate.loseCount"
                 ></win-rate>
             </v-col>
-            <v-spacer></v-spacer>
             <v-col cols="4">
                 <number-stat
                     v-if="hasWinStreakStat"
@@ -18,7 +23,6 @@
                     :value="stats.streak.win.stat"
                 ></number-stat>
             </v-col>
-            <v-spacer></v-spacer>
             <v-col cols="4">
                 <number-stat
                     v-if="hasLoseStreakStat"
@@ -31,9 +35,9 @@
                 <number-stat
                     v-if="hasBestWinStat"
                     title="Best Win"
-                    :subtitle="$repo.state.players.players.getName(stats.maxRating.win.opponentId)"
+                    :subtitle="stats.maxRating.win.elo"
                     :second-subtitle="stats.maxRating.win.timestamp | date"
-                    :value="stats.maxRating.win.elo"
+                    :value="$repo.state.players.players.getName(stats.maxRating.win.opponentId)"
                     dense
                 ></number-stat>
             </v-col>
@@ -41,9 +45,9 @@
                 <number-stat
                     v-if="hasWorstLossStat"
                     title="Worst Loss"
-                    :subtitle="$repo.state.players.players.getName(stats.maxRating.loss.opponentId)"
+                    :subtitle="stats.maxRating.loss.elo"
                     :second-subtitle="stats.maxRating.loss.timestamp | date"
-                    :value="stats.maxRating.loss.elo"
+                    :value="$repo.state.players.players.getName(stats.maxRating.loss.opponentId)"
                     dense
                 ></number-stat>
             </v-col>
@@ -71,14 +75,17 @@ import Vue from "vue";
 import WinRate from "./stats/WinRate.vue";
 import FareAgainst from "./stats/FareAgainst.vue";
 import NumberStat from "./stats/NumberStat.vue";
+import RatingVsTime from "./stats/RatingVsTime.vue";
 import { default as StatsCalculator, IStat } from "../business/stats/stats";
 import Player from "./Player.vue";
+import { ChartData } from "chart.js";
 
 export default Vue.extend({
     components: {
         "win-rate": WinRate,
         "fare-against": FareAgainst,
         "number-stat": NumberStat,
+        "rating-vs-time": RatingVsTime,
     },
     props: {
         playerFilter: Object as () => Player,
@@ -87,6 +94,29 @@ export default Vue.extend({
     data() {
         return {
             stats: {} as StatsCalculator,
+            datacollection: {
+                datasets: [
+                    {
+                        backgroundColor: [
+                            "rgba(255, 99, 132, 0.2)",
+                            "rgba(54, 162, 235, 0.2)",
+                            "rgba(255, 206, 86, 0.2)",
+                            "rgba(75, 192, 192, 0.2)",
+                            "rgba(153, 102, 255, 0.2)",
+                            "rgba(255, 159, 64, 0.2)",
+                        ],
+                        borderColor: [
+                            "rgba(255, 99, 132, 1)",
+                            "rgba(54, 162, 235, 1)",
+                            "rgba(255, 206, 86, 1)",
+                            "rgba(75, 192, 192, 1)",
+                            "rgba(153, 102, 255, 1)",
+                            "rgba(255, 159, 64, 1)",
+                        ],
+                        borderWidth: 1,
+                    },
+                ],
+            } as ChartData,
         };
     },
     computed: {

@@ -1,7 +1,6 @@
-import { IStat } from './stats';
+import { IStat, IStatsData } from './stats';
 import RecordedMatch from '../data/recordedMatch';
 import WinRate from './winRate';
-import Players from '../data/players';
 import elo from '../play/elo';
 
 interface IWinRates {
@@ -25,8 +24,7 @@ export default class FareAgainst {
 
     private actualRatesByOpponent = {} as IWinRates;
     private fares: IFare[] = [];
-    private playerId = "";
-    constructor(private playerData: Players) { }
+    constructor(private statsData: IStatsData) { }
 
     get strong(): IFareStat {
         const fares = this.getTopFares(true);
@@ -45,25 +43,25 @@ export default class FareAgainst {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    feedStat(match: RecordedMatch, playerFilterId?: string, opponentFilterId?: string) {
-        if (!playerFilterId) return;
-        this.playerId = playerFilterId;
+    feedStat(match: RecordedMatch) {
+        if (!this.statsData.playerFilterId) return;
 
-        const matchOpponent = match.getOpponent(playerFilterId);
+        const matchOpponent = match.getOpponent(this.statsData.playerFilterId);
         if (!matchOpponent) return;
 
         if (!Object.hasOwnProperty.call(this.actualRatesByOpponent, matchOpponent)) {
-            this.actualRatesByOpponent[matchOpponent] = new WinRate();
+            this.actualRatesByOpponent[matchOpponent] = new WinRate(this.statsData);
         }
 
-        this.actualRatesByOpponent[matchOpponent].feedStat(match, playerFilterId, matchOpponent);
+        this.actualRatesByOpponent[matchOpponent].feedStat(match);
     }
 
     calculateFares() {
+        if (!this.statsData.playerFilterId) return;
         //form a list of all opponents and their expected and actual win rates
         const actualRatesKeys = Object.keys(this.actualRatesByOpponent);
         for (let i = 0; i < actualRatesKeys.length; i++) {
-            const expectedWinRate = this.getExpectedWinPercentage(this.playerData.hash[this.playerId].elo, this.playerData.hash[actualRatesKeys[i]].elo);
+            const expectedWinRate = this.getExpectedWinPercentage(this.statsData.playerData.hash[this.statsData.playerFilterId].elo, this.statsData.playerData.hash[actualRatesKeys[i]].elo);
             const actualWinRate = this.actualRatesByOpponent[actualRatesKeys[i]].winRate;
             const hasMinOpponentMatches = this.actualRatesByOpponent[actualRatesKeys[i]].totalCount >= MIN_MATCH_PER_OPPONENT;
             if (hasMinOpponentMatches) {

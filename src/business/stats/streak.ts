@@ -1,9 +1,8 @@
 import RecordedMatch from '../data/recordedMatch';
-import { IStat } from './stats';
+import { IStat, IStatsData } from './stats';
 
 interface IStreakStat extends IStat {
     stat: number;
-    hasStat: boolean;
 }
 
 export default class Streak {
@@ -12,12 +11,14 @@ export default class Streak {
     private curStreak = 0;
     private curStreakIsWin = true;
 
+    constructor(private statsData: IStatsData) { }
+
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    feedStat(match: RecordedMatch, playerFilterId?: string, opponentFilterId?: string) {
-        if (!playerFilterId) return;
+    feedStat(match: RecordedMatch) {
+        if (!this.statsData.playerFilterId) return;
 
-        if (match.isWinner(playerFilterId)) {
+        if (match.isWinner(this.statsData.playerFilterId)) {
             this.win.hasStat = true;
             if (this.curStreakIsWin) {
                 this.curStreak++;
