@@ -37,7 +37,7 @@ export default class RatingVsTime implements IStat {
     }
 
     feedStat(match: RecordedMatch) {
-        if (!this.statsData.playerFilterId) return;
+        if (!this.statsData.playerFilterId || this.statsData.opponentFilterId) return;
         if (Math.floor(this.incrementValue + .001) === this.i) {
             this.addStat(match);
             this.incrementValue += this.increment;

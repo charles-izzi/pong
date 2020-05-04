@@ -1,27 +1,18 @@
 <template>
     <div class="stats">
         <v-row dense>
-            <v-col cols="12">
-                <rating-vs-time
-                    v-if="hasStat(stats.ratingVsTime)"
-                    :chartdata="stats.ratingVsTime.chartData"
-                ></rating-vs-time>
+            <v-col cols="12" v-if="hasStat(stats.ratingVsTime)">
+                <rating-vs-time :chartdata="stats.ratingVsTime.chartData"></rating-vs-time>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="4" v-if="hasStat(stats.winRate)">
                 <win-rate
-                    v-if="hasStat(stats.winRate)"
                     :win-rate="stats.winRate.winRate"
                     :win-count="stats.winRate.winCount"
                     :lose-count="stats.winRate.loseCount"
                 ></win-rate>
             </v-col>
-            <v-col cols="4">
-                <number-stat
-                    v-if="hasWinStreakStat"
-                    title="Win Streak"
-                    subtitle="Games"
-                    :value="stats.streak.win.stat"
-                ></number-stat>
+            <v-col cols="4" v-if="hasWinStreakStat">
+                <number-stat title="Win Streak" subtitle="Games" :value="stats.streak.win.stat"></number-stat>
             </v-col>
             <v-col cols="4">
                 <number-stat
@@ -31,9 +22,8 @@
                     :value="stats.streak.lose.stat"
                 ></number-stat>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="6" v-if="hasBestWinStat">
                 <number-stat
-                    v-if="hasBestWinStat"
                     title="Best Win"
                     :subtitle="stats.maxRating.win.elo"
                     :second-subtitle="stats.maxRating.win.timestamp | date"
@@ -41,9 +31,8 @@
                     dense
                 ></number-stat>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="6" v-if="hasWorstLossStat">
                 <number-stat
-                    v-if="hasWorstLossStat"
                     title="Worst Loss"
                     :subtitle="stats.maxRating.loss.elo"
                     :second-subtitle="stats.maxRating.loss.timestamp | date"
@@ -52,19 +41,11 @@
                 ></number-stat>
             </v-col>
 
-            <v-col cols="12">
-                <fare-against
-                    v-if="hasStrongStat"
-                    :strong="true"
-                    :playerFares="stats.fareAgainst.strong.fares"
-                ></fare-against>
+            <v-col cols="12" v-if="hasStrongStat">
+                <fare-against :strong="true" :playerFares="stats.fareAgainst.strong.fares"></fare-against>
             </v-col>
-            <v-col cols="12">
-                <fare-against
-                    v-if="hasWeakStat"
-                    :strong="false"
-                    :playerFares="stats.fareAgainst.weak.fares"
-                ></fare-against>
+            <v-col cols="12" v-if="hasWeakStat">
+                <fare-against :strong="false" :playerFares="stats.fareAgainst.weak.fares"></fare-against>
             </v-col>
             <v-spacer></v-spacer>
         </v-row>

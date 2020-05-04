@@ -34,7 +34,7 @@ describe("Play Match", () => {
         let player1 = TestData.playerData.hash["2"];
         let player2 = TestData.playerData.hash["3"];
         const match = new Match(player1, player2, "3");
-        match.play();
+        match.play(TestData.playerData);
 
         player1 = new Player({ ...player1 });
         player1.elo = 1283;
@@ -44,10 +44,28 @@ describe("Play Match", () => {
         player2.elo = 1267;
         expect(match.player2).toEqual(player2);
     });
+    it("play uses latest player data", () => {
+        let player1 = TestData.playerData.hash["2"];
+        let player2 = TestData.playerData.hash["3"];
+        const match = new Match(player1, player2, "3");
+        const latestTestData = TestData.playerDataCopy;
+        latestTestData.hash["2"].elo = 1200;
+        latestTestData.hash["3"].elo = 1200;
+
+        match.play(latestTestData);
+
+        player1 = new Player({ ...player1 });
+        player1.elo = 1185;
+        expect(match.player1).toEqual(player1);
+
+        player2 = new Player({ ...player2 });
+        player2.elo = 1215;
+        expect(match.player2).toEqual(player2);
+    });
     it("getMatchLog matches IMatchLog with proper timestamp", () => {
         const match = new Match(TestData.playerData.hash["2"], TestData.playerData.hash["3"], "3");
         const beforeDate = new Date();
-        match.play();
+        match.play(TestData.playerData);
         const matchlog = match.getMatchLog();
         expect(matchlog.eloChange).toBe(17);
         expect(matchlog.player1).toBe("2");

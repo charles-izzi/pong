@@ -38,9 +38,10 @@ export const playModule = defineModule({
     },
     actions: {
         play: async (context, match: Match) => {
-            const { rootDispatch } = playActionContext(context);
+            const { rootState, rootDispatch } = playActionContext(context);
 
-            match.play();
+            await rootDispatch.players.fetchPlayers();
+            match.play(rootState.players.players);
 
             rootDispatch.matchHistory.addMatch(match.getMatchLog());
             rootDispatch.players.updatePlayer(match.player1);

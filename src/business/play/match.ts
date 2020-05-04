@@ -1,6 +1,7 @@
 import elo from '../play/elo';
 import Player from '../data/player';
 import { IRecordedMatch } from '../data/recordedMatch';
+import Players from '../data/players';
 
 export default class Match {
     private eloChange = 0;
@@ -25,8 +26,11 @@ export default class Match {
         return id === this.winnerId;
     }
 
-    play() {
+    play(latestPlayerData: Players) {
         if (!this.winnerId || this.timestamp) return;
+
+        this.player1 = new Player({ ...latestPlayerData.hash[this.player1.id] });
+        this.player2 = new Player({ ...latestPlayerData.hash[this.player2.id] });
 
         this.timestamp = new Date();
         this.eloChange = elo.eloChange(

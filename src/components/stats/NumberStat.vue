@@ -35,9 +35,9 @@ export default class NumberStat extends Vue {
             "py-auto": true,
             small: this.dense,
             large: !this.dense,
-            "display-2": this.stringValue.length < 4,
+            "display-2": this.stringValue.length < 3,
             "display-1":
-                this.stringValue.length >= 4 && this.stringValue.length < 9,
+                this.stringValue.length >= 3 && this.stringValue.length < 9,
             headline:
                 this.stringValue.length >= 9 && this.stringValue.length < 11,
             title: this.stringValue.length >= 11,
