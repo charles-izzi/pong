@@ -1,5 +1,5 @@
 import RecordedMatch from "@/business/data/recordedMatch";
-import { TestData } from '../../testData';
+import { TestData } from "../../testData";
 
 describe("Recorded Match", () => {
     it("RecordedMatch constructor adds all properties", () => {
@@ -10,7 +10,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: true,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         expect(recordedMatch).toEqual({
             id: "1",
@@ -20,7 +21,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: true,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
     });
     it("updateMatch returns new player objects with elo change and sets eloChange to zero", () => {
@@ -31,7 +33,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: true,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         const playerData = TestData.playerDataCopy;
         const undonePlayers = recordedMatch.undoMatch(playerData);
@@ -41,7 +44,7 @@ describe("Recorded Match", () => {
         player2.elo = 1330;
         expect(undonePlayers).toEqual({
             player1,
-            player2
+            player2,
         });
         expect(undonePlayers.player1).not.toBe(player1);
         expect(undonePlayers.player2).not.toBe(player2);
@@ -55,7 +58,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: true,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         expect(recordedMatch.isWinner("1")).toBe(true);
         expect(recordedMatch.isWinner("2")).toBe(false);
@@ -68,7 +72,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: false,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         expect(recordedMatch.isWinner("1")).toBe(false);
         expect(recordedMatch.isWinner("2")).toBe(true);
@@ -81,7 +86,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: false,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         expect(recordedMatch.hasPlayer("1")).toBe(true);
         expect(recordedMatch.hasPlayer("2")).toBe(true);
@@ -96,7 +102,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: false,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         expect(recordedMatch.getOpponent("1")).toBe("2");
         expect(recordedMatch.getOpponent("2")).toBe("1");
@@ -111,7 +118,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: false,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         expect(recordedMatch.getOpponentElo("1")).toBe(1500);
         expect(recordedMatch.getOpponentElo("2")).toBe(1000);
@@ -126,7 +134,8 @@ describe("Recorded Match", () => {
             player2Elo: 1500,
             player1Wins: false,
             eloChange: 30,
-            timestamp: new Date(1)
+            timestamp: new Date(1),
+            matchCount: 1,
         });
         expect(recordedMatch.getPlayerElo("1")).toBe(1000);
         expect(recordedMatch.getPlayerElo("2")).toBe(1500);
