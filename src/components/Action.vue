@@ -29,9 +29,9 @@
         <v-fab-transition>
             <v-btn
                 v-show="
-          $router.currentRoute.path === homeRoute &&
-            $repo.getters.players.moreThanTwoPlayersSelected
-        "
+                    $router.currentRoute.path === homeRoute &&
+                        $repo.getters.players.moreThanTwoPlayersSelected
+                "
                 @click="showMatchMakerMenu = true"
                 dark
                 fab
@@ -57,7 +57,9 @@
         </v-fab-transition>
         <v-fab-transition>
             <v-btn
-                v-show="$router.currentRoute.path === matchMakerRoute && !overlay"
+                v-show="
+                    $router.currentRoute.path === matchMakerRoute && !overlay
+                "
                 @click="goToHome()"
                 dark
                 fab
@@ -70,7 +72,9 @@
         </v-fab-transition>
         <v-fab-transition>
             <v-btn
-                v-show="$router.currentRoute.path === matchMakerRoute && overlay"
+                v-show="
+                    $router.currentRoute.path === matchMakerRoute && overlay
+                "
                 @click="$emit('cancel-overlay')"
                 class="lighten-2"
                 fab
@@ -81,62 +85,66 @@
                 <v-icon>mdi-close</v-icon>
             </v-btn>
         </v-fab-transition>
-        <match-maker-menu :show="showMatchMakerMenu" @menu-complete="showMatchMakerMenu = false"></match-maker-menu>
+        <match-maker-menu
+            :show="showMatchMakerMenu"
+            @menu-complete="showMatchMakerMenu = false"
+        ></match-maker-menu>
     </div>
 </template>
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import { matchHistoryRoute, homeRoute, matchMakerRoute } from "@/router";
-import MatchMakerMenu from "./MatchMakerMenu.vue";
-import Match from "@/business/play/match";
-@Component({
-    props: {
-        overlay: Boolean,
-    },
-    components: {
-        "match-maker-menu": MatchMakerMenu,
-    },
-})
-export default class Action extends Vue {
-    matchHistoryRoute: string = matchHistoryRoute;
-    matchMakerRoute: string = matchMakerRoute;
-    homeRoute: string = homeRoute;
-    showMatchMakerMenu = false;
-    playMatch() {
-        this.$repo.commit.play.setPlay({
-            match: new Match(
-                this.$repo.state.players.players.hash[
-                    this.$repo.state.players.selectedPlayers[0]
-                ],
-                this.$repo.state.players.players.hash[
-                    this.$repo.state.players.selectedPlayers[1]
-                ]
-            ),
-            showDialog: true,
-            callback: () => this.$repo.commit.players.resetSelection(),
-        });
+    import Vue from "vue";
+    import Component from "vue-class-component";
+    import { matchHistoryRoute, homeRoute, matchMakerRoute } from "@/router";
+    import MatchMakerMenu from "./MatchMakerMenu.vue";
+    import Match from "@/business/play/match";
+    @Component({
+        props: {
+            overlay: Boolean,
+        },
+        components: {
+            "match-maker-menu": MatchMakerMenu,
+        },
+    })
+    export default class Action extends Vue {
+        matchHistoryRoute: string = matchHistoryRoute;
+        matchMakerRoute: string = matchMakerRoute;
+        homeRoute: string = homeRoute;
+        showMatchMakerMenu = false;
+        playMatch() {
+            this.$repo.commit.play.setPlay({
+                match: new Match(
+                    this.$repo.state.players.players.hash[
+                        this.$repo.state.players.selectedPlayers[0]
+                    ],
+                    this.$repo.state.players.players.hash[
+                        this.$repo.state.players.selectedPlayers[1]
+                    ]
+                ),
+                showDialog: true,
+                callback: () => this.$repo.commit.players.resetSelection(),
+                matchCount: 1,
+            });
+        }
+        goToMatchHistory() {
+            this.$router.push(matchHistoryRoute);
+        }
+        goToHome() {
+            this.$router.push(homeRoute);
+        }
     }
-    goToMatchHistory() {
-        this.$router.push(matchHistoryRoute);
-    }
-    goToHome() {
-        this.$router.push(homeRoute);
-    }
-}
 </script>
 <style scoped>
-button.v-btn--fab {
-    position: fixed;
-    bottom: 8% !important;
-    right: 5% !important;
-    height: 60px !important;
-    width: 60px !important;
-    z-index: 2;
-}
-.v-btn--fab .v-icon {
-    height: 30px;
-    font-size: 30px;
-    width: 30px;
-}
+    button.v-btn--fab {
+        position: fixed;
+        bottom: 8% !important;
+        right: 5% !important;
+        height: 60px !important;
+        width: 60px !important;
+        z-index: 2;
+    }
+    .v-btn--fab .v-icon {
+        height: 30px;
+        font-size: 30px;
+        width: 30px;
+    }
 </style>

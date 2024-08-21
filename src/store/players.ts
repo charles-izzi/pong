@@ -1,7 +1,7 @@
 import { $http, moduleActionContext } from ".";
 import { defineModule } from "direct-vuex";
-import Player, { IPlayer } from '@/business/data/player';
-import Players from '@/business/data/players';
+import Player, { IPlayer } from "@/business/data/player";
+import Players from "@/business/data/players";
 
 export interface PlayersModuleState {
     players: Players;
@@ -38,14 +38,17 @@ export const playersModule = defineModule({
         playerByName: state => (name: string) =>
             Object.keys(state.players.hash || {}).find(
                 x =>
-                    state.players.hash[x].player.toLowerCase() === name.toLowerCase()
+                    state.players.hash[x].player.toLowerCase() ===
+                    name.toLowerCase()
             ),
     },
     mutations: {
-        commitPlayers: (state) => {
+        commitPlayers: state => {
             state.rankedPlayers = Object.keys(state.players.hash).sort(
                 (a: string, b: string) => {
-                    return state.players.hash[a].elo < state.players.hash[b].elo ? 1 : -1;
+                    return state.players.hash[a].elo < state.players.hash[b].elo
+                        ? 1
+                        : -1;
                 }
             );
             state.rankedPlayers.forEach(
@@ -66,25 +69,34 @@ export const playersModule = defineModule({
     actions: {
         fetchPlayers: async context => {
             const { state, commit } = playersActionContext(context);
-            state.players = new Players((await $http.get("/user.json")).data as IPlayersData);
+            state.players = new Players(
+                (await $http.get("/user.json")).data as IPlayersData
+            );
             commit.commitPlayers();
         },
-        updatePlayer: (context, player: Player) => {
-            const { state, commit, rootDispatch } = playersActionContext(context);
-            rootDispatch.putUser(player);
+        updatePlayer: async (context, player: Player) => {
+            const { state, commit, rootDispatch } = playersActionContext(
+                context
+            );
+            await rootDispatch.putUser(player);
             state.players.updatePlayer(player);
             commit.commitPlayers();
         },
         addPlayer: async (context, val: string) => {
-            const { state, commit, rootDispatch } = playersActionContext(context);
+            const { state, commit, rootDispatch } = playersActionContext(
+                context
+            );
 
             const newPlayerUpdate = {
                 player: val,
                 elo: 1200,
                 hidden: false,
             };
-            const newPlayerId = (await rootDispatch.postUser(newPlayerUpdate)).data.name;
-            state.players.addPlayer(new Player({ id: newPlayerId, rank: -1, ...newPlayerUpdate }));
+            const newPlayerId = (await rootDispatch.postUser(newPlayerUpdate))
+                .data.name;
+            state.players.addPlayer(
+                new Player({ id: newPlayerId, rank: -1, ...newPlayerUpdate })
+            );
             commit.commitPlayers();
         },
         selectPlayer: (context, id) => {

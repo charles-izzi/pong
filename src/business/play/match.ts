@@ -8,15 +8,17 @@ export default class Match {
     private timestamp: Date | null = null;
     private player1OriginalElo = 0;
     private player2OriginalElo = 0;
+    private totalEloChange = 0;
     player1: Player;
     player2: Player;
-    matchCount = 1;
 
     constructor(player1: Player, player2: Player);
     constructor(player1: Player, player2: Player, winnerId: string);
     constructor(player1: Player, player2: Player, public winnerId?: string) {
         this.player1 = new Player(player1);
         this.player2 = new Player(player2);
+        this.player1OriginalElo = this.player1.elo;
+        this.player2OriginalElo = this.player2.elo;
     }
 
     get player1Wins() {
@@ -28,7 +30,7 @@ export default class Match {
     }
 
     play(latestPlayerData: Players) {
-        if (!this.winnerId || this.timestamp) return;
+        if (!this.winnerId) return;
 
         this.player1 = new Player({
             ...latestPlayerData.hash[this.player1.id],
@@ -38,17 +40,14 @@ export default class Match {
         });
 
         this.timestamp = new Date();
-        for (let i = 0; i < this.matchCount; i++) {
-            this.eloChange += elo.eloChange(
-                this.player1.elo,
-                this.player2.elo,
-                this.player1Wins
-            );
-        }
+        this.eloChange = elo.eloChange(
+            this.player1.elo,
+            this.player2.elo,
+            this.player1Wins
+        );
 
-        this.player1OriginalElo = this.player1.elo;
+        this.totalEloChange += this.eloChange;
         this.player1.elo += (this.player1Wins ? 1 : -1) * this.eloChange;
-        this.player2OriginalElo = this.player2.elo;
         this.player2.elo += (this.player1Wins ? -1 : 1) * this.eloChange;
     }
 
@@ -61,7 +60,7 @@ export default class Match {
             player2Elo: this.player2OriginalElo,
             eloChange: this.eloChange,
             timestamp: this.timestamp,
-            matchCount: this.matchCount,
+            totalEloChange: this.totalEloChange,
         } as IRecordedMatch;
     }
 }

@@ -17,12 +17,10 @@
                     :selectColor="winnerColor"
                 ></players>
                 <v-card-actions>
-                    <v-counter
-                        control-variant="split"
-                        :max="20"
-                        :min="1"
-                        v-model="$repo.state.play.play.match.matchCount"
-                    ></v-counter>
+                    <number-input
+                        :value="matchCount"
+                        @input="$repo.commit.play.setMatchCount($event)"
+                    ></number-input>
                     <v-spacer></v-spacer>
                     <v-btn
                         color="gray darken-1"
@@ -83,7 +81,10 @@
                                         "
                                         >-</span
                                     >
-                                    {{ $repo.state.play.play.match.eloChange }}
+                                    {{
+                                        $repo.state.play.play.match
+                                            .totalEloChange
+                                    }}
                                 </td>
                                 <td>{{ player.elo }}</td>
                             </tr>
@@ -104,6 +105,7 @@
     import Vue from "vue";
     import Component from "vue-class-component";
     import Notification from "./Notification.vue";
+    import NumberInput from "./core/NumberInput.vue";
     import Players from "./Players.vue";
     import { winnerColor } from "@/constants";
 
@@ -111,6 +113,7 @@
         components: {
             notification: Notification,
             players: Players,
+            numberInput: NumberInput,
         },
     })
     export default class Play extends Vue {
@@ -118,6 +121,10 @@
 
         showResults = false;
         eloChange = 0;
+
+        get matchCount() {
+            return this.$repo.state.play.play.matchCount;
+        }
 
         get playerIds() {
             return [

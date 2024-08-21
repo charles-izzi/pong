@@ -1,28 +1,23 @@
 import { defineModule } from "direct-vuex";
 import { moduleActionContext } from ".";
-import Match from '@/business/play/match';
+import Match from "@/business/play/match";
 
 export interface PlayModuleState {
     play: IPlayDialog;
-}
-
-export interface IPlay {
-    player1: string;
-    player2: string;
-    player1Wins: boolean;
 }
 
 export interface IPlayDialog {
     match: Match;
     showDialog?: boolean;
     callback?: () => void;
+    matchCount: number;
 }
 
 export const playModule = defineModule({
     namespaced: true,
     state: (): PlayModuleState => {
         return {
-            play: { showDialog: false } as IPlayDialog,
+            play: { showDialog: false, matchCount: 1 } as IPlayDialog,
         };
     },
     mutations: {
@@ -35,24 +30,29 @@ export const playModule = defineModule({
         setPlay: (state, val: IPlayDialog) => {
             state.play = val;
         },
+        setMatchCount: (state, val: number) => {
+            state.play.matchCount = val;
+        },
     },
     actions: {
         play: async (context, match: Match) => {
             const { rootState, rootDispatch } = playActionContext(context);
 
-            await rootDispatch.players.fetchPlayers();
-            match.play(rootState.players.players);
+            for (let i = 0; i < rootState.play.play.matchCount; i++) {
+                await rootDispatch.players.fetchPlayers();
+                match.play(rootState.players.players);
 
-            rootDispatch.matchHistory.addMatch(match.getMatchLog());
-            rootDispatch.players.updatePlayer(match.player1);
-            rootDispatch.players.updatePlayer(match.player2);
+                rootDispatch.matchHistory.addMatch(match.getMatchLog());
+                await rootDispatch.players.updatePlayer(match.player1);
+                await rootDispatch.players.updatePlayer(match.player2);
+            }
         },
         completeMatch: async context => {
-            const { commit } = playActionContext(context);
+            const { commit, rootState } = playActionContext(context);
 
             if (context.state.play.callback) context.state.play.callback();
-            context.dispatch("play", context.state.play.match);
-            commit.setPlay({ match: context.state.play.match });
+            await context.dispatch("play", context.state.play.match);
+            commit.setPlay({ match: rootState.play.play.match, matchCount: 1 });
         },
     },
 });

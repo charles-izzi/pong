@@ -15,6 +15,7 @@ export interface IRecordedMatch {
     eloChange: number;
     timestamp: Date;
     matchCount: number;
+    totalEloChange?: number;
 }
 
 export default class RecordedMatch implements IRecordedMatch {
